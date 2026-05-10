@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
+    ScrollView,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,14 @@ export default function HomeScreen({ navigation }) {
 
     return (
 
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+                paddingBottom: 120,
+                flexGrow: 1,
+            }}
+        >
 
             {/* HEADER */}
 
@@ -33,7 +41,9 @@ export default function HomeScreen({ navigation }) {
 
             {/* MAIN ANALYSIS CARD */}
 
-            <TouchableOpacity activeOpacity={0.9}>
+            <TouchableOpacity
+                activeOpacity={0.9}
+            >
 
                 <LinearGradient
                     colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
@@ -60,7 +70,11 @@ export default function HomeScreen({ navigation }) {
                             Upload X-ray or CBCT scan for AI prediction
                         </Text>
 
-                        <TouchableOpacity style={styles.analyzeButton}>
+                        <TouchableOpacity
+                            style={styles.analyzeButton}
+                            activeOpacity={0.8}
+                            onPress={() => navigation.navigate("SelectMode")}
+                        >
 
                             <Text style={styles.analyzeButtonText}>
                                 Analyze Now
@@ -80,7 +94,13 @@ export default function HomeScreen({ navigation }) {
 
                 {/* HISTORY */}
 
-                <TouchableOpacity style={styles.smallCard}>
+                <TouchableOpacity
+                    style={styles.smallCard}
+                    activeOpacity={0.8}
+                    onPress={() =>
+                        navigation.navigate("History")
+                    }
+                >
 
                     <View style={styles.greenIcon}>
 
@@ -104,7 +124,12 @@ export default function HomeScreen({ navigation }) {
 
                 {/* REPORTS */}
 
-                <TouchableOpacity style={styles.smallCard}>
+                <TouchableOpacity
+                    style={styles.smallCard}
+                    onPress={() =>
+                        navigation.navigate("Reports")
+                    }
+                >
 
                     <View style={styles.purpleIcon}>
 
@@ -197,7 +222,7 @@ export default function HomeScreen({ navigation }) {
 
             </View>
 
-        </View>
+        </ScrollView>
 
     );
 }

@@ -5,6 +5,7 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
+    ScrollView,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,11 @@ export default function LoginScreen({ navigation }) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}
+        >
 
             <View style={styles.logoContainer}>
                 <Text style={styles.logo}>🦷</Text>
@@ -96,7 +101,7 @@ export default function LoginScreen({ navigation }) {
                 </Text>
             </TouchableOpacity>
 
-        </View>
+        </ScrollView>
     );
 }
 
@@ -105,8 +110,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#F8FAFC",
-        justifyContent: "center",
         paddingHorizontal: 28,
+    },
+
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: "center",
     },
 
     logoContainer: {

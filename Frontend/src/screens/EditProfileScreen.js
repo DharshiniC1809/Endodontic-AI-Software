@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     Modal,
+    ScrollView,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -19,7 +20,14 @@ export default function EditProfileScreen({ navigation }) {
 
     return (
 
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+                paddingBottom: 120,
+                flexGrow: 1,
+            }}
+        >
 
             {/* HEADER */}
 
@@ -171,7 +179,7 @@ export default function EditProfileScreen({ navigation }) {
 
             </Modal>
 
-        </View>
+        </ScrollView>
 
     );
 }

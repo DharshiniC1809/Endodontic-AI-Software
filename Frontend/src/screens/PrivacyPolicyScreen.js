@@ -19,6 +19,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
                 paddingBottom: 120,
+                flexGrow: 1,
             }}
         >
 

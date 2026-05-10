@@ -5,6 +5,7 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
+    ScrollView,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,14 @@ export default function ProfileScreen({ navigation }) {
 
     return (
 
-        <View style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+                paddingBottom: 120,
+                flexGrow: 1,
+            }}
+        >
 
             {/* HEADER */}
 
@@ -254,7 +262,7 @@ export default function ProfileScreen({ navigation }) {
 
             </View>
 
-        </View>
+        </ScrollView>
 
     );
 }

@@ -18,7 +18,7 @@ export default function HelpSupportScreen({ navigation }) {
             style={styles.container}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-                paddingBottom: 140,
+                paddingBottom: 120,
                 flexGrow: 1,
             }}
         >
