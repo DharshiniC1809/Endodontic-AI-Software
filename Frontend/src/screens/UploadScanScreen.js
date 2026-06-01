@@ -81,10 +81,6 @@ export default function UploadScanScreen({
             return cbctImage;
         }
 
-        if (mode === "both") {
-            return xrayImage && cbctImage;
-        }
-
         return false;
     };
 
@@ -120,9 +116,7 @@ export default function UploadScanScreen({
                     {
                         mode === "xray"
                             ? "Upload X-ray"
-                            : mode === "cbct"
-                                ? "Upload CBCT"
-                                : "Upload Images"
+                            : "Upload CBCT"
                     }
 
                 </Text>
@@ -165,7 +159,7 @@ export default function UploadScanScreen({
             {/* X-RAY */}
 
             {
-                (mode === "xray" || mode === "both") && (
+                mode === "xray" && (
 
                     <TouchableOpacity
                         style={styles.uploadBox}
@@ -208,7 +202,7 @@ export default function UploadScanScreen({
             {/* CBCT */}
 
             {
-                (mode === "cbct" || mode === "both") && (
+                mode === "cbct" && (
 
                     <TouchableOpacity
                         style={styles.uploadBox}
@@ -252,11 +246,7 @@ export default function UploadScanScreen({
 
             <Text style={styles.noteText}>
 
-                {
-                    mode === "both"
-                        ? "Upload clear X-ray and CBCT images for best accuracy"
-                        : "Upload a clear scan image for accurate prediction"
-                }
+                "Upload a clear scan image for accurate prediction"
 
             </Text>
 
@@ -266,11 +256,18 @@ export default function UploadScanScreen({
                 activeOpacity={0.8}
                 disabled={!canContinue()}
                 onPress={() =>
-                    navigation.navigate("Preview", {
-                        mode,
-                        xrayImage,
-                        cbctImage,
-                    })
+                    navigation.navigate(
+                        "Preview",
+                        {
+                            mode,
+
+                            patientName,
+                            patientAge,
+
+                            xrayImage,
+                            cbctImage,
+                        }
+                    )
                 }
             >
 

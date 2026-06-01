@@ -15,6 +15,8 @@ import {
     Dimensions,
 } from "react-native";
 
+import { uploadScan } from "../services/api";
+
 import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -34,6 +36,12 @@ export default function PreviewScreen({
 
     const mode =
         route?.params?.mode || "xray";
+
+    const patientName =
+        route?.params?.patientName;
+
+    const patientAge =
+        route?.params?.patientAge;
 
     const xrayImage =
         route?.params?.xrayImage;
@@ -325,6 +333,38 @@ export default function PreviewScreen({
 
     ).current;
 
+    const handleAnalyze = () => {
+
+        const roi = mode === "xray"
+            ? {
+                x: xrayPan.x._value,
+                y: xrayPan.y._value,
+                width: xrayBoxWidth,
+                height: xrayBoxHeight
+            }
+            : {
+                x: cbctPan.x._value,
+                y: cbctPan.y._value,
+                width: cbctBoxWidth,
+                height: cbctBoxHeight
+            };
+
+        navigation.navigate(
+            "Loading",
+            {
+                mode,
+
+                patientName,
+                patientAge,
+
+                roi,
+
+                xrayImage,
+                cbctImage
+            }
+        );
+    };
+
     return (
 
         <ScrollView
@@ -379,13 +419,7 @@ export default function PreviewScreen({
 
                 <Text style={styles.modeValue}>
 
-                    {
-                        mode === "xray"
-                            ? "X-ray"
-                            : mode === "cbct"
-                                ? "CBCT"
-                                : "X-ray + CBCT"
-                    }
+                    {mode === "xray" ? "X-ray" : "CBCT"}
 
                 </Text>
 
@@ -584,12 +618,7 @@ export default function PreviewScreen({
 
             <TouchableOpacity
                 activeOpacity={0.85}
-                onPress={() =>
-                    navigation.navigate(
-                        "Loading",
-                        { mode }
-                    )
-                }
+                onPress={handleAnalyze}
             >
 
                 <LinearGradient

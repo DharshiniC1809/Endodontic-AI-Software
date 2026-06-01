@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import { updateProfile }
+    from "../services/api";
+
 import {
     View,
     Text,
@@ -14,9 +17,66 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function EditProfileScreen({ navigation }) {
+export default function EditProfileScreen({
+    navigation,
+    route
+}) {
 
-    const [successModal, setSuccessModal] = useState(false);
+    const user =
+        route?.params?.user;
+
+    const [name, setName] =
+        useState(user?.name || "");
+
+    const [email, setEmail] =
+        useState(user?.email || "");
+
+    const [successModal, setSuccessModal] =
+        useState(false);
+
+    const handleSave = async () => {
+
+        try {
+
+            const result =
+                await updateProfile(
+                    user._id,
+                    name,
+                    email
+                );
+
+            if (result.success) {
+
+                setSuccessModal(true);
+
+                setTimeout(() => {
+
+                    setSuccessModal(false);
+
+                    navigation.replace(
+                        "Profile",
+                        {
+                            user: result.user
+                        }
+                    );
+
+                }, 1500);
+
+            } else {
+
+                alert(result.message);
+
+            }
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert("Server Error");
+
+        }
+
+    };
 
     return (
 
@@ -66,7 +126,7 @@ export default function EditProfileScreen({ navigation }) {
                 </View>
 
                 <Text style={styles.profileName}>
-                    Dr. Dharshini
+                    Dr. {name || "Doctor"}
                 </Text>
 
             </LinearGradient>
@@ -86,7 +146,8 @@ export default function EditProfileScreen({ navigation }) {
                     placeholder="Full Name"
                     placeholderTextColor="#94A3B8"
                     style={styles.input}
-                    defaultValue="Dr. Dharshini"
+                    value={name}
+                    onChangeText={setName}
                 />
 
             </View>
@@ -104,7 +165,8 @@ export default function EditProfileScreen({ navigation }) {
                     placeholder="Email"
                     placeholderTextColor="#94A3B8"
                     style={styles.input}
-                    defaultValue="doctor@endodonticai.com"
+                    value={email}
+                    onChangeText={setEmail}
                 />
 
             </View>
@@ -113,7 +175,7 @@ export default function EditProfileScreen({ navigation }) {
 
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSuccessModal(true)}
+                onPress={handleSave}
             >
 
                 <LinearGradient

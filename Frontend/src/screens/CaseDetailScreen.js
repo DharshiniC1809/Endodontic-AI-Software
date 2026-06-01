@@ -3,6 +3,14 @@ import React, {
 } from "react";
 
 import {
+    updateNotes
+} from "../services/api";
+
+import {
+    deleteCase
+} from "../services/api";
+
+import {
     View,
     Text,
     StyleSheet,
@@ -10,6 +18,7 @@ import {
     TouchableOpacity,
     Modal,
     TextInput,
+    Image,
 } from "react-native";
 
 import {
@@ -31,7 +40,7 @@ export default function CaseDetailScreen({
 
     const [notes, setNotes] =
         useState(
-            "File slightly curved. Careful handling required."
+            caseData.notes || ""
         );
 
     const [editModal, setEditModal] =
@@ -43,52 +52,39 @@ export default function CaseDetailScreen({
     const [showSaved, setShowSaved] =
         useState(false);
 
+    const [deleteModal, setDeleteModal] =
+        useState(false);
+
     // STATUS COLORS
 
-    const getResultData = () => {
-
-        if (
-            caseData.status ===
-            "High Success"
-        ) {
-
-            return {
+    const result =
+        caseData.prediction === "HIGH"
+            ? {
                 colors: [
                     "#22C55E",
                     "#16A34A"
                 ],
                 label:
-                    "FINAL: HIGH SUCCESS",
-            };
-        }
+                    "HIGH SUCCESS"
+            }
+            : caseData.prediction === "LOW"
+                ? {
+                    colors: [
+                        "#EF4444",
+                        "#DC2626"
+                    ],
+                    label:
+                        "LOW SUCCESS"
+                }
+                : {
+                    colors: [
+                        "#F59E0B",
+                        "#D97706"
+                    ],
+                    label:
+                        "MODERATE SUCCESS"
+                };
 
-        if (
-            caseData.status ===
-            "Moderate"
-        ) {
-
-            return {
-                colors: [
-                    "#F59E0B",
-                    "#D97706"
-                ],
-                label:
-                    "MODERATE SUCCESS",
-            };
-        }
-
-        return {
-            colors: [
-                "#EF4444",
-                "#DC2626"
-            ],
-            label:
-                "LOW SUCCESS",
-        };
-    };
-
-    const result =
-        getResultData();
 
     return (
 
@@ -133,11 +129,11 @@ export default function CaseDetailScreen({
                 <View style={styles.patientCard}>
 
                     <Text style={styles.patientName}>
-                        {caseData.patient}
+                        {caseData.patientName}
                     </Text>
 
                     <Text style={styles.caseInfo}>
-                        {caseData.id} • {caseData.date}
+                        Age: {caseData.patientAge || "N/A"}
                     </Text>
 
                     <Text style={styles.modeText}>
@@ -162,7 +158,7 @@ export default function CaseDetailScreen({
                     </Text>
 
                     <Text style={styles.confidenceText}>
-                        AI Confidence: 94%
+                        AI Confidence: {caseData.confidence?.toFixed(2)}%
                     </Text>
 
                 </LinearGradient>
@@ -172,34 +168,54 @@ export default function CaseDetailScreen({
                 <View style={styles.measurementCard}>
 
                     <View style={styles.measurementRow}>
-
                         <Text style={styles.measurementLabel}>
-                            Remaining Dentin Thickness
+                            Mean Intensity
                         </Text>
 
                         <Text style={styles.measurementValue}>
-                            0.8 mm
+                            {caseData.meanIntensity?.toFixed(2)}
                         </Text>
-
                     </View>
-
-                    <View style={styles.divider} />
 
                     <View style={styles.measurementRow}>
-
                         <Text style={styles.measurementLabel}>
-                            Root Canal Curvature
+                            Edge Density
                         </Text>
 
                         <Text style={styles.measurementValue}>
-                            32°
+                            {caseData.edgeDensity?.toFixed(4)}
                         </Text>
-
                     </View>
 
-                    <Text style={styles.analysisText}>
-                        Based on combined X-ray and CBCT analysis
-                    </Text>
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Contrast
+                        </Text>
+
+                        <Text style={styles.measurementValue}>
+                            {caseData.contrast?.toFixed(2)}
+                        </Text>
+                    </View>
+
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Homogeneity
+                        </Text>
+
+                        <Text style={styles.measurementValue}>
+                            {caseData.homogeneity?.toFixed(2)}
+                        </Text>
+                    </View>
+
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Energy
+                        </Text>
+
+                        <Text style={styles.measurementValue}>
+                            {caseData.energy?.toFixed(2)}
+                        </Text>
+                    </View>
 
                 </View>
 
@@ -228,11 +244,68 @@ export default function CaseDetailScreen({
                     </View>
 
                     <Text style={styles.recommendationText}>
-                        Combined analysis shows high success rate.
-                        Proceed normally.
+                        {
+                            caseData.prediction === "HIGH"
+                                ? "High probability of successful treatment."
+                                : caseData.prediction === "LOW"
+                                    ? "Low success probability. Further examination recommended."
+                                    : "Moderate success expected. Clinical review recommended."
+                        }
                     </Text>
 
                 </LinearGradient>
+
+                {/* X-RAY SCAN */}
+
+                {
+                    caseData.mode === "xray" ||
+                        caseData.mode === "Combined"
+                        ? (
+
+                            <View style={styles.scanCard}>
+
+                                <Text style={styles.scanTitle}>
+                                    X-ray Scan
+                                </Text>
+
+                                <Image
+                                    source={{
+                                        uri:
+                                            caseData.xrayImage
+                                    }}
+                                    style={styles.scanImage}
+                                />
+
+                            </View>
+
+                        ) : null
+                }
+
+                {/* CBCT SCAN */}
+
+                {
+                    caseData.mode === "cbct" ||
+                        caseData.mode === "Combined"
+                        ? (
+
+                            <View style={styles.scanCard}>
+
+                                <Text style={styles.scanTitle}>
+                                    CBCT Scan
+                                </Text>
+
+                                <Image
+                                    source={{
+                                        uri:
+                                            caseData.cbctImage
+                                    }}
+                                    style={styles.scanImage}
+                                />
+
+                            </View>
+
+                        ) : null
+                }
 
                 {/* NOTES */}
 
@@ -316,7 +389,26 @@ export default function CaseDetailScreen({
 
                             <TouchableOpacity
                                 style={styles.saveButton}
-                                onPress={() => {
+                                onPress={async () => {
+
+                                    try {
+
+                                        await updateNotes(
+                                            caseData._id,
+                                            tempNotes
+                                        );
+
+                                        setNotes(tempNotes);
+
+                                        setEditModal(false);
+
+                                        setShowSaved(true);
+
+                                    } catch (error) {
+
+                                        alert("Failed to save notes");
+
+                                    }
 
                                     setNotes(tempNotes);
 
@@ -388,6 +480,121 @@ export default function CaseDetailScreen({
                 </View>
 
             </Modal>
+
+            {/* DELETE MODAL */}
+
+            <Modal
+                transparent={true}
+                visible={deleteModal}
+                animationType="fade"
+            >
+
+                <View style={styles.modalOverlay}>
+
+                    <View style={styles.deleteModalContainer}>
+
+                        {/* ICON */}
+
+                        <View style={styles.deleteCircle}>
+
+                            <Ionicons
+                                name="trash"
+                                size={34}
+                                color="#FFFFFF"
+                            />
+
+                        </View>
+
+                        {/* TITLE */}
+
+                        <Text style={styles.deleteTitle}>
+                            Delete Case?
+                        </Text>
+
+                        <Text style={styles.deleteSubtitle}>
+                            This action cannot be undone.
+                        </Text>
+
+                        {/* BUTTONS */}
+
+                        <View style={styles.deleteButtonsRow}>
+
+                            {/* CANCEL */}
+
+                            <TouchableOpacity
+                                style={styles.keepButton}
+                                onPress={() =>
+                                    setDeleteModal(false)
+                                }
+                            >
+
+                                <Text style={styles.keepText}>
+                                    Cancel
+                                </Text>
+
+                            </TouchableOpacity>
+
+                            {/* DELETE */}
+
+                            <TouchableOpacity
+                                style={styles.confirmDeleteButton}
+                                onPress={async () => {
+
+                                    const result =
+                                        await deleteCase(
+                                            caseData._id
+                                        );
+
+                                    if (result.success) {
+
+                                        setDeleteModal(false);
+
+                                        navigation.goBack();
+
+                                    }
+
+                                }}
+                            >
+
+                                <Text style={styles.confirmDeleteText}>
+                                    Delete
+                                </Text>
+
+                            </TouchableOpacity>
+
+                        </View>
+
+                    </View>
+
+                </View>
+
+            </Modal>
+
+            {/* DELETE BUTTON */}
+
+            <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setDeleteModal(true)}
+            >
+
+                <LinearGradient
+                    colors={["#EF4444", "#DC2626"]}
+                    style={styles.deleteButton}
+                >
+
+                    <Ionicons
+                        name="trash"
+                        size={18}
+                        color="#FFFFFF"
+                    />
+
+                    <Text style={styles.deleteButtonText}>
+                        Delete Case
+                    </Text>
+
+                </LinearGradient>
+
+            </TouchableOpacity>
 
         </View>
 
@@ -516,6 +723,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: 14,
     },
 
     measurementLabel: {
@@ -729,6 +937,148 @@ const styles = StyleSheet.create({
         color: "#64748B",
         textAlign: "center",
         lineHeight: 22,
+    },
+
+    deleteButton: {
+        marginTop: 20,
+        marginBottom: 20,
+
+        height: 58,
+        borderRadius: 20,
+
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+
+        shadowColor: "#EF4444",
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 8,
+
+        elevation: 6,
+    },
+
+    deleteButtonText: {
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "700",
+        marginLeft: 10,
+    },
+
+    deleteModalContainer: {
+        width: "100%",
+        backgroundColor: "#FFFFFF",
+
+        borderRadius: 34,
+
+        paddingVertical: 36,
+        paddingHorizontal: 28,
+
+        alignItems: "center",
+    },
+
+    deleteCircle: {
+        width: 92,
+        height: 92,
+        borderRadius: 46,
+
+        backgroundColor: "#EF4444",
+
+        justifyContent: "center",
+        alignItems: "center",
+
+        marginBottom: 24,
+    },
+
+    deleteTitle: {
+        fontSize: 24,
+        fontWeight: "700",
+        color: "#0F172A",
+    },
+
+    deleteSubtitle: {
+        marginTop: 10,
+        fontSize: 14,
+        color: "#64748B",
+        textAlign: "center",
+        lineHeight: 22,
+    },
+
+    deleteButtonsRow: {
+        flexDirection: "row",
+        marginTop: 30,
+    },
+
+    keepButton: {
+        flex: 1,
+        backgroundColor: "#E2E8F0",
+
+        paddingVertical: 16,
+
+        borderRadius: 18,
+
+        alignItems: "center",
+
+        marginRight: 8,
+    },
+
+    confirmDeleteButton: {
+        flex: 1,
+        backgroundColor: "#EF4444",
+
+        paddingVertical: 16,
+
+        borderRadius: 18,
+
+        alignItems: "center",
+
+        marginLeft: 8,
+    },
+
+    keepText: {
+        color: "#475569",
+        fontWeight: "700",
+        fontSize: 15,
+    },
+
+    confirmDeleteText: {
+        color: "#FFFFFF",
+        fontWeight: "700",
+        fontSize: 15,
+    },
+
+    scanCard: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 24,
+        padding: 18,
+        marginBottom: 22,
+
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.04,
+        shadowRadius: 6,
+
+        elevation: 3,
+    },
+
+    scanTitle: {
+        fontSize: 17,
+        fontWeight: "700",
+        color: "#0F172A",
+        marginBottom: 14,
+    },
+
+    scanImage: {
+        width: "100%",
+        height: 220,
+        borderRadius: 20,
+        backgroundColor: "#E2E8F0",
     },
 
 });

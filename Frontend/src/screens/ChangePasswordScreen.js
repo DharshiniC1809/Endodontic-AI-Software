@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import { changePassword }
+    from "../services/api";
+
 import {
     View,
     Text,
@@ -14,7 +17,29 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function ChangePasswordScreen({ navigation }) {
+export default function ChangePasswordScreen({
+    navigation,
+    route
+}) {
+
+    const user =
+        route?.params?.user;
+
+    const [currentPassword,
+        setCurrentPassword] =
+        useState("");
+
+    const [newPassword,
+        setNewPassword] =
+        useState("");
+
+    const [confirmPassword,
+        setConfirmPassword] =
+        useState("");
+
+    const [error,
+        setError] =
+        useState("");
 
     const [showCurrent, setShowCurrent] = useState(false);
 
@@ -23,6 +48,44 @@ export default function ChangePasswordScreen({ navigation }) {
     const [showConfirm, setShowConfirm] = useState(false);
 
     const [successModal, setSuccessModal] = useState(false);
+
+    const handleChangePassword =
+        async () => {
+
+            if (
+                newPassword !==
+                confirmPassword
+            ) {
+
+                setError(
+                    "Passwords do not match"
+                );
+
+                return;
+            }
+
+            const result =
+                await changePassword(
+                    user._id,
+                    currentPassword,
+                    newPassword
+                );
+
+            if (result.success) {
+
+                setError("");
+
+                setSuccessModal(true);
+
+            } else {
+
+                setError(
+                    result.message
+                );
+
+            }
+
+        };
 
     return (
 
@@ -103,6 +166,8 @@ export default function ChangePasswordScreen({ navigation }) {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry={!showCurrent}
                     style={styles.input}
+                    value={currentPassword}
+                    onChangeText={setCurrentPassword}
                 />
 
                 <TouchableOpacity
@@ -135,6 +200,8 @@ export default function ChangePasswordScreen({ navigation }) {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry={!showNew}
                     style={styles.input}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
                 />
 
                 <TouchableOpacity
@@ -167,6 +234,8 @@ export default function ChangePasswordScreen({ navigation }) {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry={!showConfirm}
                     style={styles.input}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                 />
 
                 <TouchableOpacity
@@ -183,11 +252,25 @@ export default function ChangePasswordScreen({ navigation }) {
 
             </View>
 
+            {
+                error ? (
+                    <Text
+                        style={{
+                            color: "red",
+                            marginBottom: 15,
+                            textAlign: "center"
+                        }}
+                    >
+                        {error}
+                    </Text>
+                ) : null
+            }
+
             {/* UPDATE BUTTON */}
 
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => setSuccessModal(true)}
+                onPress={handleChangePassword}
             >
 
                 <LinearGradient

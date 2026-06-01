@@ -119,14 +119,6 @@ export default function SelectModeScreen({ navigation }) {
                 "3D detailed analysis"
             )}
 
-            {/* BOTH */}
-
-            {renderCard(
-                "both",
-                "Both (X-ray + CBCT)",
-                "Combined high accuracy"
-            )}
-
             {/* CONTINUE BUTTON */}
 
             <TouchableOpacity

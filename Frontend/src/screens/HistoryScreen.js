@@ -1,6 +1,15 @@
 import React, {
     useState,
+    useCallback,
 } from "react";
+
+import {
+    getHistory
+} from "../services/api";
+
+import {
+    useFocusEffect
+} from "@react-navigation/native";
 
 import {
     View,
@@ -26,49 +35,74 @@ export default function HistoryScreen({
     const [selectedFilter, setSelectedFilter] =
         useState("All");
 
-    const historyData = [
+    const [historyData, setHistoryData] =
+        useState([]);
 
-        {
-            id: "CASE-1247",
-            patient: "John Smith",
-            mode: "Combined",
-            status: "High Success",
-            date: "24 Apr 2026",
-            color: "#10B981",
-        },
 
-        {
-            id: "CASE-1246",
-            patient: "Sarah Johnson",
-            mode: "X-ray",
-            status: "Moderate",
-            date: "23 Apr 2026",
-            color: "#F59E0B",
-        },
+    useFocusEffect(
 
-        {
-            id: "CASE-1245",
-            patient: "Michael Brown",
-            mode: "CBCT",
-            status: "Low Success",
-            date: "22 Apr 2026",
-            color: "#EF4444",
-        },
-    ];
+        useCallback(() => {
+
+            loadHistory();
+
+        }, [])
+
+    );
+
+    const loadHistory = async () => {
+
+        try {
+
+            const result =
+                await getHistory();
+
+            if (result.success) {
+
+                setHistoryData(
+                    result.analyses
+                );
+
+            }
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+
+    };
 
     const filters = [
         "All",
         "X-ray",
         "CBCT",
-        "Combined",
     ];
 
     const filteredData =
         selectedFilter === "All"
             ? historyData
             : historyData.filter(
-                (item) =>
-                    item.mode === selectedFilter
+                (item) => {
+
+                    if (
+                        selectedFilter === "X-ray"
+                    ) {
+
+                        return item.mode === "xray";
+
+                    }
+
+                    if (
+                        selectedFilter === "CBCT"
+                    ) {
+
+                        return item.mode === "cbct";
+
+                    }
+
+                    return true;
+
+                }
             );
 
     return (
@@ -136,7 +170,7 @@ export default function HistoryScreen({
                         <View style={styles.statBox}>
 
                             <Text style={styles.statNumber}>
-                                12
+                                {historyData.length}
                             </Text>
 
                             <Text style={styles.statLabel}>
@@ -148,7 +182,11 @@ export default function HistoryScreen({
                         <View style={styles.statBox}>
 
                             <Text style={styles.statNumber}>
-                                8
+                                {
+                                    historyData.filter(
+                                        item => item.prediction === "HIGH"
+                                    ).length
+                                }
                             </Text>
 
                             <Text style={styles.statLabel}>
@@ -245,105 +283,120 @@ export default function HistoryScreen({
                 {/* HISTORY LIST */}
 
                 {
-                    filteredData.map((item) => (
+                    filteredData.map((item) => {
 
-                        <TouchableOpacity
-                            key={item.id}
-                            activeOpacity={0.85}
-                            style={styles.historyCard}
-                            onPress={() =>
-                                navigation.navigate(
-                                    "CaseDetail",
-                                    {
-                                        caseData: item,
-                                    }
-                                )
-                            }
-                        >
+                        const color =
+                            item.prediction === "HIGH"
+                                ? "#10B981"
+                                : item.prediction === "LOW"
+                                    ? "#EF4444"
+                                    : "#F59E0B";
 
-                            {/* LEFT */}
+                        return (
 
-                            <View
-                                style={[
-                                    styles.avatarCircle,
-                                    {
-                                        backgroundColor:
-                                            item.color + "20"
-                                    }
-                                ]}
+                            <TouchableOpacity
+                                key={item._id}
+                                activeOpacity={0.85}
+                                style={styles.historyCard}
+                                onPress={() =>
+                                    navigation.navigate(
+                                        "CaseDetail",
+                                        {
+                                            caseData: item,
+                                        }
+                                    )
+                                }
                             >
 
-                                <Ionicons
-                                    name="person"
-                                    size={20}
-                                    color={item.color}
-                                />
-
-                            </View>
-
-                            {/* CENTER */}
-
-                            <View style={styles.cardContent}>
-
-                                <Text style={styles.patientName}>
-                                    {item.patient}
-                                </Text>
-
-                                <Text style={styles.caseInfo}>
-                                    {item.id} • {item.date}
-                                </Text>
-
-                                <Text style={styles.modeText}>
-                                    {item.mode} Analysis
-                                </Text>
-
-                            </View>
-
-                            {/* RIGHT */}
-
-                            <View>
+                                {/* LEFT */}
 
                                 <View
                                     style={[
-                                        styles.statusBadge,
+                                        styles.avatarCircle,
                                         {
                                             backgroundColor:
-                                                item.color + "20"
+                                                color + "20"
                                         }
                                     ]}
                                 >
 
-                                    <Text
-                                        style={[
-                                            styles.statusText,
-                                            {
-                                                color:
-                                                    item.color
-                                            }
-                                        ]}
-                                    >
+                                    <Ionicons
+                                        name="person"
+                                        size={20}
+                                        color={color}
+                                    />
 
-                                        {item.status}
+                                </View>
 
+                                {/* CENTER */}
+
+                                <View style={styles.cardContent}>
+
+                                    <Text style={styles.patientName}>
+                                        {item.patientName}
+                                    </Text>
+
+                                    <Text style={styles.caseInfo}>
+                                        {
+                                            new Date(
+                                                item.createdAt
+                                            ).toLocaleDateString()
+                                        }
+                                    </Text>
+
+                                    <Text style={styles.modeText}>
+                                        {item.mode} Analysis
                                     </Text>
 
                                 </View>
 
-                                <Ionicons
-                                    name="chevron-forward"
-                                    size={18}
-                                    color="#94A3B8"
-                                    style={{
-                                        marginTop: 14,
-                                        alignSelf: "center",
-                                    }}
-                                />
+                                {/* RIGHT */}
 
-                            </View>
+                                <View>
 
-                        </TouchableOpacity>
+                                    <View
+                                        style={[
+                                            styles.statusBadge,
+                                            {
+                                                backgroundColor:
+                                                    color + "20"
+                                            }
+                                        ]}
+                                    >
 
-                    ))
+                                        <Text
+                                            style={[
+                                                styles.statusText,
+                                                {
+                                                    color:
+                                                        color
+                                                }
+                                            ]}
+                                        >
+
+                                            {item.prediction}
+
+                                        </Text>
+
+                                    </View>
+
+                                    <Ionicons
+                                        name="chevron-forward"
+                                        size={18}
+                                        color="#94A3B8"
+                                        style={{
+                                            marginTop: 14,
+                                            alignSelf: "center",
+                                        }}
+                                    />
+
+                                </View>
+
+                            </TouchableOpacity>
+
+                        );
+
+                    })
                 }
 
             </ScrollView>

@@ -2,6 +2,9 @@ import React, {
     useState,
 } from "react";
 
+import { saveAnalysis }
+    from "../services/api";
+
 import {
     View,
     Text,
@@ -26,6 +29,21 @@ export default function ResultScreen({
     const mode =
         route?.params?.mode || "xray";
 
+    const aiResult =
+        route?.params?.aiResult;
+
+    const patientName =
+        route?.params?.patientName;
+
+    const patientAge =
+        route?.params?.patientAge;
+
+    const xrayImage =
+        route?.params?.xrayImage;
+
+    const cbctImage =
+        route?.params?.cbctImage;
+
     // STATES
 
     const [notes, setNotes] =
@@ -42,123 +60,117 @@ export default function ResultScreen({
 
     // RESULT DATA
 
-    const resultData = {
+    // AI RESULT DATA
 
-        xray: {
+    const prediction =
+        aiResult?.prediction || "UNKNOWN";
 
-            status: "MODERATE SUCCESS",
+    const confidence =
+        aiResult?.confidence || 0;
 
-            color: [
-                "#F59E0B",
-                "#D97706"
-            ],
+    const features =
+        aiResult?.features || {};
 
-            textColor: "#FFFFFF",
+    let cardColor = [
+        "#F59E0B",
+        "#D97706"
+    ];
 
-            measurements: [
+    let recommendation =
+        "Moderate success expected. Clinical review recommended.";
 
-                {
-                    label:
-                        "Remaining Dentin Thickness",
+    if (prediction === "HIGH") {
 
-                    value: "0.8 mm",
-                },
+        cardColor = [
+            "#10B981",
+            "#059669"
+        ];
 
-                {
-                    label:
-                        "Root Canal Curvature",
+        recommendation =
+            "High probability of successful treatment.";
 
-                    value: "32°",
-                },
-            ],
+    }
 
-            recommendation:
-                "Proceed with caution. Use specialized instruments.",
-        },
+    else if (prediction === "LOW") {
 
-        cbct: {
+        cardColor = [
+            "#EF4444",
+            "#DC2626"
+        ];
 
-            status: "LOW SUCCESS",
+        recommendation =
+            "Low success probability. Further examination recommended.";
+    }
 
-            color: [
-                "#EF4444",
-                "#DC2626"
-            ],
+    const handleSaveCase =
+        async () => {
 
-            textColor: "#FFFFFF",
+            try {
 
-            measurements: [
+                console.log("Saving...");
+                console.log({
+                    patientName,
+                    patientAge,
+                    mode,
+                    prediction,
+                    confidence
+                });
 
-                {
-                    label:
-                        "Canal Depth",
+                const result =
+                    await saveAnalysis({
 
-                    value: "Deep",
-                },
+                        userId: "TEMP_USER",
 
-                {
-                    label:
-                        "Canal Volume",
+                        patientName,
+                        patientAge,
 
-                    value: "Adequate",
-                },
+                        mode,
 
-                {
-                    label:
-                        "Canal Structure",
+                        prediction,
+                        confidence,
 
-                    value: "Favorable",
-                },
-            ],
+                        notes:
+                            savedNotes || notes,
 
-            recommendation:
-                "Complex canal anatomy detected. Additional care is recommended.",
-        },
+                        meanIntensity:
+                            features.meanIntensity,
 
-        both: {
+                        edgeDensity:
+                            features.edgeDensity,
 
-            status: "FINAL: HIGH SUCCESS",
+                        contrast:
+                            features.contrast,
 
-            color: [
-                "#10B981",
-                "#059669"
-            ],
+                        homogeneity:
+                            features.homogeneity,
 
-            textColor: "#FFFFFF",
+                        energy:
+                            features.energy,
 
-            measurements: [
+                        xrayImage,
+                        cbctImage
 
-                {
-                    label:
-                        "Remaining Dentin Thickness",
+                    });
 
-                    value: "0.8 mm",
-                },
+                if (result.success) {
 
-                {
-                    label:
-                        "Root Canal Curvature",
+                    setSaveModal(true);
 
-                    value: "32°",
-                },
+                } else {
 
-                {
-                    label:
-                        "Canal Structure",
+                    alert(result.message);
 
-                    value: "Favorable",
-                },
-            ],
+                }
 
-            recommendation:
-                "Combined analysis shows high treatment success probability.",
-        },
-    };
+            } catch (error) {
 
-    // CURRENT DATA
+                console.log(error);
 
-    const data =
-        resultData[mode];
+                alert("Server Error");
+
+            }
+
+        };
 
     return (
 
@@ -187,7 +199,7 @@ export default function ResultScreen({
             {/* RESULT CARD */}
 
             <LinearGradient
-                colors={data.color}
+                colors={cardColor}
                 style={styles.resultCard}
             >
 
@@ -196,7 +208,7 @@ export default function ResultScreen({
                         styles.predictionLabel,
                         {
                             color:
-                                data.textColor
+                                "#FFFFFF"
                         }
                     ]}
                 >
@@ -204,47 +216,32 @@ export default function ResultScreen({
                     {
                         mode === "xray"
                             ? "Prediction (X-ray)"
-                            : mode === "cbct"
-                                ? "Prediction (CBCT)"
-                                : "Prediction (Combined)"
+                            : "Prediction (CBCT)"
                     }
 
                 </Text>
-
-                {
-                    mode === "both" && (
-
-                        <Text
-                            style={[
-                                styles.smallResult,
-                                {
-                                    color:
-                                        data.textColor
-                                }
-                            ]}
-                        >
-
-                            X-ray: MODERATE SUCCESS
-                            {"\n"}
-                            CBCT: LOW SUCCESS
-
-                        </Text>
-
-                    )
-                }
 
                 <Text
                     style={[
                         styles.resultText,
                         {
-                            color:
-                                data.textColor
+                            color: "#FFFFFF"
                         }
                     ]}
                 >
+                    {prediction}
+                </Text>
 
-                    {data.status}
-
+                <Text
+                    style={{
+                        color: "#FFFFFF",
+                        fontSize: 18,
+                        marginTop: 12,
+                        fontWeight: "600",
+                        textAlign: "center",
+                    }}
+                >
+                    Confidence: {confidence}%
                 </Text>
 
             </LinearGradient>
@@ -253,39 +250,50 @@ export default function ResultScreen({
 
             <View style={styles.measurementCard}>
 
-                {
-                    data.measurements.map(
-                        (
-                            item,
-                            index
-                        ) => (
+                <View style={styles.measurementRow}>
+                    <Text style={styles.measurementLabel}>
+                        Mean Intensity
+                    </Text>
+                    <Text style={styles.measurementValue}>
+                        {features.meanIntensity?.toFixed(2)}
+                    </Text>
+                </View>
 
-                            <View
-                                key={index}
-                                style={styles.measurementRow}
-                            >
+                <View style={styles.measurementRow}>
+                    <Text style={styles.measurementLabel}>
+                        Edge Density
+                    </Text>
+                    <Text style={styles.measurementValue}>
+                        {features.edgeDensity?.toFixed(4)}
+                    </Text>
+                </View>
 
-                                <Text
-                                    style={styles.measurementLabel}
-                                >
+                <View style={styles.measurementRow}>
+                    <Text style={styles.measurementLabel}>
+                        Contrast
+                    </Text>
+                    <Text style={styles.measurementValue}>
+                        {features.contrast?.toFixed(2)}
+                    </Text>
+                </View>
 
-                                    {item.label}
+                <View style={styles.measurementRow}>
+                    <Text style={styles.measurementLabel}>
+                        Homogeneity
+                    </Text>
+                    <Text style={styles.measurementValue}>
+                        {features.homogeneity?.toFixed(2)}
+                    </Text>
+                </View>
 
-                                </Text>
-
-                                <Text
-                                    style={styles.measurementValue}
-                                >
-
-                                    {item.value}
-
-                                </Text>
-
-                            </View>
-
-                        )
-                    )
-                }
+                <View style={styles.measurementRow}>
+                    <Text style={styles.measurementLabel}>
+                        Energy
+                    </Text>
+                    <Text style={styles.measurementValue}>
+                        {features.energy?.toFixed(2)}
+                    </Text>
+                </View>
 
             </View>
 
@@ -309,7 +317,7 @@ export default function ResultScreen({
                     style={styles.recommendationText}
                 >
 
-                    {data.recommendation}
+                    {recommendation}
 
                 </Text>
 
@@ -383,9 +391,7 @@ export default function ResultScreen({
                 <TouchableOpacity
                     activeOpacity={0.85}
                     style={styles.buttonWrapper}
-                    onPress={() =>
-                        setSaveModal(true)
-                    }
+                    onPress={handleSaveCase}
                 >
 
                     <LinearGradient

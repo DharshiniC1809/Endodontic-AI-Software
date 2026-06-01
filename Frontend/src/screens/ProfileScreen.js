@@ -12,7 +12,13 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({
+    navigation,
+    route
+}) {
+
+    const user =
+        route?.params?.user;
 
     return (
 
@@ -55,13 +61,13 @@ export default function ProfileScreen({ navigation }) {
                 {/* NAME */}
 
                 <Text style={styles.name}>
-                    Dr. Dharshini
+                    Dr. {user?.name || "Doctor"}
                 </Text>
 
                 {/* EMAIL */}
 
                 <Text style={styles.email}>
-                    doctor@endodonticai.com
+                    {user?.email || "No Email"}
                 </Text>
 
             </LinearGradient>
@@ -74,7 +80,14 @@ export default function ProfileScreen({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.menuCard}
-                    onPress={() => navigation.navigate("EditProfile")}
+                    onPress={() =>
+                        navigation.navigate(
+                            "EditProfile",
+                            {
+                                user
+                            }
+                        )
+                    }
                 >
 
                     <View style={styles.menuLeft}>
@@ -107,7 +120,14 @@ export default function ProfileScreen({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.menuCard}
-                    onPress={() => navigation.navigate("ChangePassword")}
+                    onPress={() =>
+                        navigation.navigate(
+                            "ChangePassword",
+                            {
+                                user
+                            }
+                        )
+                    }
                 >
 
                     <View style={styles.menuLeft}>

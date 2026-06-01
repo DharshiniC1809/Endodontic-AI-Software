@@ -12,7 +12,13 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({
+    navigation,
+    route
+}) {
+
+    const user =
+        route?.params?.user;
 
     return (
 
@@ -30,7 +36,7 @@ export default function HomeScreen({ navigation }) {
             <View style={styles.header}>
 
                 <Text style={styles.greeting}>
-                    Hello, Doctor 👋
+                    Hello, {user?.name || "Doctor"} 👋
                 </Text>
 
                 <Text style={styles.subtitle}>
@@ -205,7 +211,14 @@ export default function HomeScreen({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.navItem}
-                    onPress={() => navigation.navigate("Profile")}
+                    onPress={() =>
+                        navigation.navigate(
+                            "Profile",
+                            {
+                                user
+                            }
+                        )
+                    }
                 >
 
                     <Ionicons

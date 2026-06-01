@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+
+import {
+    loginUser
+} from "../services/api";
+
 import {
     View,
     Text,
@@ -14,6 +19,54 @@ import { LinearGradient } from "expo-linear-gradient";
 export default function LoginScreen({ navigation }) {
 
     const [showPassword, setShowPassword] = useState(false);
+
+    const [error, setError] =
+        useState("");
+
+    const [email, setEmail] =
+        useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const handleLogin = async () => {
+
+        try {
+
+            const result =
+                await loginUser(
+                    email,
+                    password
+                );
+
+            if (result.success) {
+
+                setError("");
+
+                navigation.replace(
+                    "Home",
+                    {
+                        user: result.user
+                    }
+                );
+
+            } else {
+
+                setError(result.message);
+
+            }
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert(
+                "Server Error"
+            );
+
+        }
+
+    };
 
     return (
         <ScrollView
@@ -46,6 +99,8 @@ export default function LoginScreen({ navigation }) {
                     placeholder="Email"
                     placeholderTextColor="#94A3B8"
                     style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
                 />
             </View>
 
@@ -64,7 +119,23 @@ export default function LoginScreen({ navigation }) {
                     placeholderTextColor="#94A3B8"
                     secureTextEntry={!showPassword}
                     style={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
                 />
+
+                {/* ERROR MESSAGE */}
+
+                {
+                    error ? (
+
+                        <Text
+                            style={styles.errorText}
+                        >
+                            {error}
+                        </Text>
+
+                    ) : null
+                }
 
                 <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
@@ -81,7 +152,7 @@ export default function LoginScreen({ navigation }) {
 
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate("Home")}
+                onPress={handleLogin}
             >
                 <LinearGradient
                     colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
@@ -192,6 +263,18 @@ const styles = StyleSheet.create({
         color: "#0F172A",
     },
 
+    forgotButton: {
+        alignSelf: "flex-end",
+        marginTop: -6,
+        marginBottom: 20,
+    },
+
+    forgotText: {
+        color: "#2563EB",
+        fontSize: 14,
+        fontWeight: "600",
+    },
+
     button: {
         paddingVertical: 18,
         borderRadius: 16,
@@ -210,6 +293,21 @@ const styles = StyleSheet.create({
         color: "#64748B",
         marginTop: 28,
         fontSize: 14,
+    },
+
+    errorText: {
+
+        color: "#EF4444",
+
+        fontSize: 13,
+
+        marginTop: -10,
+
+        marginBottom: 15,
+
+        marginLeft: 5,
+
+        fontWeight: "600",
     },
 
 });

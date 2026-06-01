@@ -1,5 +1,6 @@
 import React, {
     useState,
+    useEffect,
 } from "react";
 
 import {
@@ -19,6 +20,10 @@ import {
     LinearGradient,
 } from "expo-linear-gradient";
 
+import {
+    getHistory
+} from "../services/api";
+
 export default function ReportsScreen({
     navigation,
 }) {
@@ -29,42 +34,35 @@ export default function ReportsScreen({
     const [search, setSearch] =
         useState("");
 
-    const reports = [
-
-        {
-            id: "CASE-1247",
-            patient: "John Smith",
-            mode: "Combined",
-            status: "High",
-            date: "24 Apr 2026",
-            color: "#10B981",
-        },
-
-        {
-            id: "CASE-1246",
-            patient: "Sarah Johnson",
-            mode: "X-ray",
-            status: "Moderate",
-            date: "23 Apr 2026",
-            color: "#F59E0B",
-        },
-
-        {
-            id: "CASE-1245",
-            patient: "Michael Brown",
-            mode: "CBCT",
-            status: "Low",
-            date: "22 Apr 2026",
-            color: "#EF4444",
-        },
-    ];
+    const [reports, setReports] =
+        useState([]);
 
     const filters = [
         "All",
         "X-ray",
         "CBCT",
-        "Combined",
     ];
+
+    useEffect(() => {
+
+        loadReports();
+
+    }, []);
+
+    const loadReports = async () => {
+
+        const result =
+            await getHistory();
+
+        if (result.success) {
+
+            setReports(
+                result.analyses
+            );
+
+        }
+
+    };
 
     const filteredReports =
         reports.filter((item) => {
@@ -72,16 +70,20 @@ export default function ReportsScreen({
             const matchesFilter =
                 selectedFilter === "All"
                     ? true
-                    : item.mode === selectedFilter;
+                    : selectedFilter === "X-ray"
+                        ? item.mode === "xray"
+                        : selectedFilter === "CBCT"
+                            ? item.mode === "cbct"
+                            : true;
 
             const matchesSearch =
-                item.patient
+                item.patientName
                     .toLowerCase()
                     .includes(
                         search.toLowerCase()
                     ) ||
 
-                item.id
+                item._id
                     .toLowerCase()
                     .includes(
                         search.toLowerCase()
@@ -176,6 +178,8 @@ export default function ReportsScreen({
 
                 </View>
 
+
+
                 {/* FILTERS */}
 
                 <ScrollView
@@ -242,105 +246,120 @@ export default function ReportsScreen({
                 {/* REPORT LIST */}
 
                 {
-                    filteredReports.map((item) => (
+                    filteredReports.map((item) => {
 
-                        <TouchableOpacity
-                            key={item.id}
-                            activeOpacity={0.85}
-                            style={styles.reportCard}
-                            onPress={() =>
-                                navigation.navigate(
-                                    "ReportDetail",
-                                    {
-                                        report: item,
-                                    }
-                                )
-                            }
-                        >
+                        const color =
+                            item.prediction === "HIGH"
+                                ? "#10B981"
+                                : item.prediction === "LOW"
+                                    ? "#EF4444"
+                                    : "#F59E0B";
 
-                            {/* LEFT */}
-
-                            <View
-                                style={[
-                                    styles.avatarCircle,
-                                    {
-                                        backgroundColor:
-                                            item.color + "20"
-                                    }
-                                ]}
+                        return (
+                            <TouchableOpacity
+                                key={item._id}
+                                activeOpacity={0.85}
+                                style={styles.reportCard}
+                                onPress={() =>
+                                    navigation.navigate(
+                                        "ReportDetail",
+                                        {
+                                            report: item,
+                                        }
+                                    )
+                                }
                             >
 
-                                <Ionicons
-                                    name="document-text"
-                                    size={20}
-                                    color={item.color}
-                                />
-
-                            </View>
-
-                            {/* CENTER */}
-
-                            <View style={styles.cardContent}>
-
-                                <Text style={styles.patientName}>
-                                    {item.patient}
-                                </Text>
-
-                                <Text style={styles.caseInfo}>
-                                    {item.id} • {item.date}
-                                </Text>
-
-                                <Text style={styles.modeText}>
-                                    {item.mode} Report
-                                </Text>
-
-                            </View>
-
-                            {/* RIGHT */}
-
-                            <View>
+                                {/* LEFT */}
 
                                 <View
                                     style={[
-                                        styles.statusBadge,
+                                        styles.avatarCircle,
                                         {
                                             backgroundColor:
-                                                item.color + "20"
+                                                color + "20"
                                         }
                                     ]}
                                 >
 
-                                    <Text
-                                        style={[
-                                            styles.statusText,
+                                    <Ionicons
+                                        name="document-text"
+                                        size={20}
+                                        color={color}
+                                    />
+
+                                </View>
+
+                                {/* CENTER */}
+
+                                <View style={styles.cardContent}>
+
+                                    <Text style={styles.patientName}>
+                                        {item.patientName}
+                                    </Text>
+
+                                    <Text style={styles.caseInfo}>
+                                        <Text style={styles.caseInfo}>
                                             {
-                                                color:
-                                                    item.color
+                                                new Date(
+                                                    item.createdAt
+                                                ).toLocaleDateString()
                                             }
-                                        ]}
-                                    >
+                                        </Text>
+                                    </Text>
 
-                                        {item.status}
-
+                                    <Text style={styles.modeText}>
+                                        {item.mode} Report
                                     </Text>
 
                                 </View>
 
-                                <Ionicons
-                                    name="chevron-forward"
-                                    size={18}
-                                    color="#94A3B8"
-                                    style={{
-                                        marginTop: 14,
-                                        alignSelf: "center",
-                                    }}
-                                />
+                                {/* RIGHT */}
 
-                            </View>
+                                <View>
 
-                        </TouchableOpacity>
+                                    <View
+                                        style={[
+                                            styles.statusBadge,
+                                            {
+                                                backgroundColor:
+                                                    color + "20"
+                                            }
+                                        ]}
+                                    >
 
-                    ))
+                                        <Text
+                                            style={[
+                                                styles.statusText,
+                                                {
+                                                    color:
+                                                        color
+                                                }
+                                            ]}
+                                        >
+
+                                            {item.prediction}
+
+                                        </Text>
+
+                                    </View>
+
+                                    <Ionicons
+                                        name="chevron-forward"
+                                        size={18}
+                                        color="#94A3B8"
+                                        style={{
+                                            marginTop: 14,
+                                            alignSelf: "center",
+                                        }}
+                                    />
+
+                                </View>
+
+                            </TouchableOpacity>
+
+                        );
+                    })
                 }
 
             </ScrollView>

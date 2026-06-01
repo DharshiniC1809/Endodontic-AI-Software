@@ -11,6 +11,8 @@ import {
     Animated,
 } from "react-native";
 
+import { uploadScan } from "../services/api";
+
 import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,6 +26,21 @@ export default function LoadingScreen({
 
     const mode =
         route?.params?.mode || "xray";
+
+    const patientName =
+        route?.params?.patientName;
+
+    const patientAge =
+        route?.params?.patientAge;
+
+    const roi =
+        route?.params?.roi;
+
+    const xrayImage =
+        route?.params?.xrayImage;
+
+    const cbctImage =
+        route?.params?.cbctImage;
 
     // STEP STATE
 
@@ -117,20 +134,97 @@ export default function LoadingScreen({
                 setStep(4);
             }, 5600),
 
-            setTimeout(() => {
 
-                navigation.replace(
-                    "Result",
-                    {
-                        mode,
-                    }
-                );
-
-            }, 7200),
         ];
 
         return () =>
             timers.forEach(clearTimeout);
+
+    }, []);
+
+    useEffect(() => {
+
+        const analyzeScan = async () => {
+
+            try {
+
+                const formData = new FormData();
+
+                formData.append(
+                    "mode",
+                    mode
+                );
+
+                formData.append(
+                    "roiData",
+                    JSON.stringify(roi)
+                );
+
+                if (xrayImage) {
+
+                    formData.append(
+                        "xrayImage",
+                        {
+                            uri: xrayImage,
+                            name: "xray.jpg",
+                            type: "image/jpeg"
+                        }
+                    );
+                }
+
+                if (cbctImage) {
+
+                    formData.append(
+                        "cbctImage",
+                        {
+                            uri: cbctImage,
+                            name: "cbct.jpg",
+                            type: "image/jpeg"
+                        }
+                    );
+                }
+
+                const result =
+                    await uploadScan(
+                        formData
+                    );
+
+                console.log(
+                    "AI RESULT:",
+                    result
+                );
+
+                setTimeout(() => {
+
+                    navigation.replace(
+                        "Result",
+                        {
+                            mode,
+
+                            patientName,
+                            patientAge,
+
+                            xrayImage,
+                            cbctImage,
+
+                            aiResult:
+                                result.aiResult
+                        }
+                    );
+
+                }, 7200);
+
+            } catch (error) {
+
+                console.log(
+                    "ANALYSIS ERROR:",
+                    error
+                );
+            }
+
+        };
+
+        analyzeScan();
 
     }, []);
 
@@ -221,15 +315,11 @@ export default function LoadingScreen({
             <View style={styles.modeBadge}>
 
                 <Text style={styles.modeText}>
-
                     {
                         mode === "xray"
                             ? "X-ray Analysis"
-                            : mode === "cbct"
-                                ? "CBCT Analysis"
-                                : "Combined Analysis"
+                            : "CBCT Analysis"
                     }
-
                 </Text>
 
             </View>
