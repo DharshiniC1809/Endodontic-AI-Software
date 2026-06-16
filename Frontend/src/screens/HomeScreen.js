@@ -1,4 +1,12 @@
-import React from "react";
+import AsyncStorage from
+    "@react-native-async-storage/async-storage";
+
+import React,
+{
+    useEffect,
+    useState
+}
+    from "react";
 
 import {
     View,
@@ -6,6 +14,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -17,8 +26,32 @@ export default function HomeScreen({
     route
 }) {
 
-    const user =
-        route?.params?.user;
+    const [user, setUser] =
+        useState(null);
+
+    useEffect(() => {
+
+        const loadUser =
+            async () => {
+
+                const storedUser =
+                    await AsyncStorage.getItem(
+                        "user"
+                    );
+
+                if (storedUser) {
+
+                    setUser(
+                        JSON.parse(
+                            storedUser
+                        )
+                    );
+                }
+            };
+
+        loadUser();
+
+    }, []);
 
     return (
 
@@ -30,158 +63,187 @@ export default function HomeScreen({
                 flexGrow: 1,
             }}
         >
-
-            {/* HEADER */}
-
-            <View style={styles.header}>
-
-                <Text style={styles.greeting}>
-                    Hello, {user?.name || "Doctor"} 👋
-                </Text>
-
-                <Text style={styles.subtitle}>
-                    AI-powered dental analysis
-                </Text>
-
-            </View>
-
-            {/* MAIN ANALYSIS CARD */}
-
-            <TouchableOpacity
-                activeOpacity={0.9}
+            <View
+                style={
+                    Platform.OS === "web"
+                        ? {
+                            width: 500,
+                            maxWidth: "90%",
+                            alignSelf: "center",
+                        }
+                        : {}
+                }
             >
+                {/* HEADER */}
 
-                <LinearGradient
-                    colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
-                    style={styles.analysisCard}
+                <View style={styles.header}>
+
+                    <Text style={styles.greeting}>
+                        Hello, {user ? user.name : "Doctor"} 👋
+                    </Text>
+
+                    <Text style={styles.subtitle}>
+                        AI-powered dental analysis
+                    </Text>
+
+                </View>
+
+                {/* MAIN ANALYSIS CARD */}
+
+                <TouchableOpacity
+                    activeOpacity={0.9}
                 >
 
-                    <View style={styles.analysisIcon}>
+                    <LinearGradient
+                        colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
+                        style={styles.analysisCard}
+                    >
+
+                        <View style={styles.analysisIcon}>
+
+                            <Ionicons
+                                name="cloud-upload"
+                                size={24}
+                                color="#2563EB"
+                            />
+
+                        </View>
+
+                        <View style={{ flex: 1 }}>
+
+                            <Text style={styles.analysisTitle}>
+                                Start Analysis
+                            </Text>
+
+                            <Text style={styles.analysisText}>
+                                Upload X-ray or CBCT scan for AI prediction
+                            </Text>
+
+                            <TouchableOpacity
+                                style={styles.analyzeButton}
+                                activeOpacity={0.8}
+                                onPress={() =>
+                                    navigation.navigate(
+                                        "SelectMode",
+                                        {
+                                            user
+                                        }
+                                    )
+                                }
+                            >
+
+                                <Text style={styles.analyzeButtonText}>
+                                    Analyze Now
+                                </Text>
+
+                            </TouchableOpacity>
+
+                        </View>
+
+                    </LinearGradient>
+
+                </TouchableOpacity>
+
+                {/* QUICK CARDS */}
+
+                <View style={styles.cardRow}>
+
+                    {/* HISTORY */}
+
+                    <TouchableOpacity
+                        style={styles.smallCard}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                            navigation.navigate(
+                                "History",
+                                {
+                                    user
+                                }
+                            )
+                        }
+                    >
+
+                        <View style={styles.greenIcon}>
+
+                            <Ionicons
+                                name="time"
+                                size={18}
+                                color="#FFFFFF"
+                            />
+
+                        </View>
+
+                        <Text style={styles.cardTitle}>
+                            History
+                        </Text>
+
+                        <Text style={styles.cardSubtitle}>
+                            Previous analyses
+                        </Text>
+
+                    </TouchableOpacity>
+
+                    {/* REPORTS */}
+
+                    <TouchableOpacity
+                        style={styles.smallCard}
+                        onPress={() =>
+                            navigation.navigate(
+                                "Reports",
+                                {
+                                    user
+                                }
+                            )
+                        }
+                    >
+
+                        <View style={styles.purpleIcon}>
+
+                            <Ionicons
+                                name="document-text"
+                                size={18}
+                                color="#FFFFFF"
+                            />
+
+                        </View>
+
+                        <Text style={styles.cardTitle}>
+                            Reports
+                        </Text>
+
+                        <Text style={styles.cardSubtitle}>
+                            Download reports
+                        </Text>
+
+                    </TouchableOpacity>
+
+                </View>
+
+                {/* CLINICAL TIP */}
+
+                <View style={styles.tipCard}>
+
+                    <View style={styles.tipIcon}>
 
                         <Ionicons
-                            name="cloud-upload"
-                            size={24}
-                            color="#2563EB"
+                            name="information"
+                            size={16}
+                            color="#FFFFFF"
                         />
 
                     </View>
 
                     <View style={{ flex: 1 }}>
 
-                        <Text style={styles.analysisTitle}>
-                            Start Analysis
+                        <Text style={styles.tipTitle}>
+                            Clinical Tip
                         </Text>
 
-                        <Text style={styles.analysisText}>
-                            Upload X-ray or CBCT scan for AI prediction
+                        <Text style={styles.tipText}>
+                            Ensure the X-ray clearly shows the complete root canal region for accurate AI prediction.
                         </Text>
 
-                        <TouchableOpacity
-                            style={styles.analyzeButton}
-                            activeOpacity={0.8}
-                            onPress={() => navigation.navigate("SelectMode")}
-                        >
-
-                            <Text style={styles.analyzeButtonText}>
-                                Analyze Now
-                            </Text>
-
-                        </TouchableOpacity>
-
                     </View>
-
-                </LinearGradient>
-
-            </TouchableOpacity>
-
-            {/* QUICK CARDS */}
-
-            <View style={styles.cardRow}>
-
-                {/* HISTORY */}
-
-                <TouchableOpacity
-                    style={styles.smallCard}
-                    activeOpacity={0.8}
-                    onPress={() =>
-                        navigation.navigate("History")
-                    }
-                >
-
-                    <View style={styles.greenIcon}>
-
-                        <Ionicons
-                            name="time"
-                            size={18}
-                            color="#FFFFFF"
-                        />
-
-                    </View>
-
-                    <Text style={styles.cardTitle}>
-                        History
-                    </Text>
-
-                    <Text style={styles.cardSubtitle}>
-                        Previous analyses
-                    </Text>
-
-                </TouchableOpacity>
-
-                {/* REPORTS */}
-
-                <TouchableOpacity
-                    style={styles.smallCard}
-                    onPress={() =>
-                        navigation.navigate("Reports")
-                    }
-                >
-
-                    <View style={styles.purpleIcon}>
-
-                        <Ionicons
-                            name="document-text"
-                            size={18}
-                            color="#FFFFFF"
-                        />
-
-                    </View>
-
-                    <Text style={styles.cardTitle}>
-                        Reports
-                    </Text>
-
-                    <Text style={styles.cardSubtitle}>
-                        Download reports
-                    </Text>
-
-                </TouchableOpacity>
-
-            </View>
-
-            {/* CLINICAL TIP */}
-
-            <View style={styles.tipCard}>
-
-                <View style={styles.tipIcon}>
-
-                    <Ionicons
-                        name="information"
-                        size={16}
-                        color="#FFFFFF"
-                    />
-
-                </View>
-
-                <View style={{ flex: 1 }}>
-
-                    <Text style={styles.tipTitle}>
-                        Clinical Tip
-                    </Text>
-
-                    <Text style={styles.tipText}>
-                        Ensure the X-ray clearly shows the complete root canal region for accurate AI prediction.
-                    </Text>
 
                 </View>
 
@@ -410,8 +472,16 @@ const styles = StyleSheet.create({
     bottomNav: {
         position: "absolute",
         bottom: 0,
-        left: 0,
-        right: 0,
+
+        ...(Platform.OS === "web"
+            ? {
+                width: 540,
+                alignSelf: "center",
+            }
+            : {
+                left: 0,
+                right: 0,
+            }),
 
         flexDirection: "row",
         justifyContent: "space-around",

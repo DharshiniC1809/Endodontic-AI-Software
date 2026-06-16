@@ -72,6 +72,13 @@ def analyze():
 
         image = cv2.imread(imagePath)
 
+        print("IMAGE PATH =", imagePath)
+
+        if image is None:
+            print("IMAGE NOT FOUND")
+        else:
+            print("IMAGE SHAPE =", image.shape)
+
         if image is None:
 
             return jsonify({
@@ -82,19 +89,61 @@ def analyze():
         # ROI VALUES
 
         x = int(roi["x"])
-
         y = int(roi["y"])
-
         width = int(roi["width"])
-
         height = int(roi["height"])
 
+        if width <= 0 or height <= 0:
+            return jsonify({
+                "success": False,
+                "message": "Invalid ROI"
+            })
+        
+        if width <= 1 or height <= 1:
+            imgHeight, imgWidth = image.shape[:2]
+
+            x = 0
+            y = 0
+            width = imgWidth
+            height = imgHeight
+
+        imgHeight, imgWidth = image.shape[:2]
+
+        x = max(0, min(x, imgWidth - 1))
+        y = max(0, min(y, imgHeight - 1))
+
+        width = min(width, imgWidth - x)
+        height = min(height, imgHeight - y)
+
+        imgHeight, imgWidth = image.shape[:2]
+
+        x = max(0, min(x, imgWidth - 1))
+        y = max(0, min(y, imgHeight - 1))
+
+        width = min(width, imgWidth - x)
+        height = min(height, imgHeight - y)
+
         # CROP ROI
+
+        print("AFTER FIX X =", x)
+        print("AFTER FIX Y =", y)
+        print("AFTER FIX WIDTH =", width)
+        print("AFTER FIX HEIGHT =", height)
 
         croppedROI = image[
             y:y + height,
             x:x + width
         ]
+
+        print("ROI =", roi)
+
+        print("CROPPED SHAPE =", croppedROI.shape)
+
+        if croppedROI.size == 0:
+            return jsonify({
+                "success": False,
+                "message": "ROI EMPTY"
+           })
 
         # RESIZE
 

@@ -2,9 +2,9 @@ import React, {
     useState,
 } from "react";
 
-
-import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import * as Print from "expo-print";
+import { Platform } from "react-native";
 
 import {
     View,
@@ -79,12 +79,19 @@ export default function ReportDetailScreen({
 
     const downloadPDF = async () => {
 
+        console.log("DOWNLOAD BUTTON CLICKED");
+
         const html = `
 <html>
 
 <head>
 
 <style>
+
+*{
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
 
 body{
     font-family: Arial;
@@ -268,6 +275,28 @@ td{
 
 </div>
 
+<div class="section">
+
+    <h2>Diagnostic Image</h2>
+
+    <img
+        src="${report.mode === "xray"
+                ? `http://10.179.115.44:5000/uploads/${report.xrayImage}`
+                : `http://10.179.115.44:5000/uploads/${report.cbctImage}`
+            }"
+        style="
+    width:70%;
+    max-height:250px;
+    object-fit:contain;
+    display:block;
+    margin:auto;
+    border:1px solid #E2E8F0;
+    border-radius:12px;
+"
+    />
+
+</div>
+
 <div class="footer">
 
     <hr>
@@ -287,10 +316,22 @@ td{
 </html>
 `;
 
+        if (Platform.OS === "web") {
+
+            const printWindow = window.open("", "_blank");
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.print();
+
+            return;
+        }
+
         const file =
             await Print.printToFileAsync({
                 html
             });
+
+        console.log("PDF =", file);
 
         await Sharing.shareAsync(
             file.uri
@@ -492,7 +533,7 @@ td{
                                 <Image
                                     source={{
                                         uri:
-                                            report.xrayImage
+                                            `http://10.179.115.44:5000/uploads/${report.xrayImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -518,7 +559,7 @@ td{
                                 <Image
                                     source={{
                                         uri:
-                                            report.cbctImage
+                                            `http://10.179.115.44:5000/uploads/${report.cbctImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -648,6 +689,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     backRow: {

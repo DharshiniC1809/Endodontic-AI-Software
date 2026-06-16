@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import AsyncStorage from
+    "@react-native-async-storage/async-storage";
+
 import { updateProfile }
     from "../services/api";
 
@@ -11,6 +14,7 @@ import {
     StyleSheet,
     Modal,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -46,6 +50,11 @@ export default function EditProfileScreen({
                 );
 
             if (result.success) {
+
+                await AsyncStorage.setItem(
+                    "user",
+                    JSON.stringify(result.user)
+                );
 
                 setSuccessModal(true);
 
@@ -260,6 +269,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 28,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     backButton: {
@@ -292,6 +306,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 35,
         marginBottom: 35,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
 
         shadowColor: "#2563EB",
         shadowOffset: {
@@ -335,6 +354,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         height: 62,
 
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
+
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -361,6 +385,11 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         alignItems: "center",
         marginTop: 18,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
 
         shadowColor: "#2563EB",
         shadowOffset: {
@@ -403,6 +432,11 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
 
         elevation: 10,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     successIcon: {

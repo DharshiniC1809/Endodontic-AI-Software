@@ -9,6 +9,8 @@ import {
     View,
     Text,
     TouchableOpacity,
+    KeyboardAvoidingView,
+    Platform,
     StyleSheet,
     TextInput,
     ScrollView,
@@ -24,6 +26,11 @@ export default function ResultScreen({
     route,
 }) {
 
+    const user =
+        route?.params?.user;
+
+    console.log("RESULT USER =", user);
+
     // SAFE MODE
 
     const mode =
@@ -31,6 +38,8 @@ export default function ResultScreen({
 
     const aiResult =
         route?.params?.aiResult;
+
+    console.log("AI RESULT RECEIVED =", aiResult);
 
     const patientName =
         route?.params?.patientName;
@@ -119,7 +128,7 @@ export default function ResultScreen({
                 const result =
                     await saveAnalysis({
 
-                        userId: "TEMP_USER",
+                        userId: user._id,
 
                         patientName,
                         patientAge,
@@ -147,8 +156,11 @@ export default function ResultScreen({
                         energy:
                             features.energy,
 
-                        xrayImage,
-                        cbctImage
+                        xrayImage:
+                            aiResult?.xrayImage,
+
+                        cbctImage:
+                            aiResult?.cbctImage,
 
                     });
 
@@ -174,392 +186,331 @@ export default function ResultScreen({
 
     return (
 
-        <ScrollView
-            style={styles.container}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-                paddingBottom: 140,
-            }}
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={
+                Platform.OS === "ios"
+                    ? "padding"
+                    : "height"
+            }
         >
 
-            {/* HEADER */}
-
-            <View style={styles.headerSection}>
-
-                <Text style={styles.title}>
-                    Analysis Result
-                </Text>
-
-                <Text style={styles.subtitle}>
-                    AI-powered endodontic prediction summary
-                </Text>
-
-            </View>
-
-            {/* RESULT CARD */}
-
-            <LinearGradient
-                colors={cardColor}
-                style={styles.resultCard}
+            <ScrollView
+                style={styles.container}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{
+                    paddingBottom: 250,
+                }}
             >
 
-                <Text
-                    style={[
-                        styles.predictionLabel,
-                        {
-                            color:
-                                "#FFFFFF"
-                        }
-                    ]}
-                >
+                {/* HEADER */}
 
-                    {
-                        mode === "xray"
-                            ? "Prediction (X-ray)"
-                            : "Prediction (CBCT)"
-                    }
+                <View style={styles.headerSection}>
 
-                </Text>
-
-                <Text
-                    style={[
-                        styles.resultText,
-                        {
-                            color: "#FFFFFF"
-                        }
-                    ]}
-                >
-                    {prediction}
-                </Text>
-
-                <Text
-                    style={{
-                        color: "#FFFFFF",
-                        fontSize: 18,
-                        marginTop: 12,
-                        fontWeight: "600",
-                        textAlign: "center",
-                    }}
-                >
-                    Confidence: {confidence}%
-                </Text>
-
-            </LinearGradient>
-
-            {/* MEASUREMENTS */}
-
-            <View style={styles.measurementCard}>
-
-                <View style={styles.measurementRow}>
-                    <Text style={styles.measurementLabel}>
-                        Mean Intensity
+                    <Text style={styles.title}>
+                        Analysis Result
                     </Text>
-                    <Text style={styles.measurementValue}>
-                        {features.meanIntensity?.toFixed(2)}
+
+                    <Text style={styles.subtitle}>
+                        AI-powered endodontic prediction summary
                     </Text>
+
                 </View>
 
-                <View style={styles.measurementRow}>
-                    <Text style={styles.measurementLabel}>
-                        Edge Density
-                    </Text>
-                    <Text style={styles.measurementValue}>
-                        {features.edgeDensity?.toFixed(4)}
-                    </Text>
-                </View>
+                {/* RESULT CARD */}
 
-                <View style={styles.measurementRow}>
-                    <Text style={styles.measurementLabel}>
-                        Contrast
-                    </Text>
-                    <Text style={styles.measurementValue}>
-                        {features.contrast?.toFixed(2)}
-                    </Text>
-                </View>
-
-                <View style={styles.measurementRow}>
-                    <Text style={styles.measurementLabel}>
-                        Homogeneity
-                    </Text>
-                    <Text style={styles.measurementValue}>
-                        {features.homogeneity?.toFixed(2)}
-                    </Text>
-                </View>
-
-                <View style={styles.measurementRow}>
-                    <Text style={styles.measurementLabel}>
-                        Energy
-                    </Text>
-                    <Text style={styles.measurementValue}>
-                        {features.energy?.toFixed(2)}
-                    </Text>
-                </View>
-
-            </View>
-
-            {/* RECOMMENDATION */}
-
-            <LinearGradient
-                colors={[
-                    "#DBEAFE",
-                    "#E0F2FE"
-                ]}
-                style={styles.recommendationCard}
-            >
-
-                <Text
-                    style={styles.recommendationTitle}
-                >
-                    AI Recommendation
-                </Text>
-
-                <Text
-                    style={styles.recommendationText}
+                <LinearGradient
+                    colors={cardColor}
+                    style={styles.resultCard}
                 >
 
-                    {recommendation}
-
-                </Text>
-
-            </LinearGradient>
-
-            {/* NOTES */}
-
-            <View style={styles.notesCard}>
-
-                <Text style={styles.notesTitle}>
-                    Notes
-                </Text>
-
-                <Text style={styles.notesSubtitle}>
-                    Add clinical observations
-                    (optional)
-                </Text>
-
-                <TextInput
-                    placeholder="Type notes here..."
-                    placeholderTextColor="#94A3B8"
-                    style={styles.notesInput}
-                    multiline
-                    value={notes}
-                    onChangeText={setNotes}
-                />
-
-                {/* SAVE NOTES */}
-
-                <TouchableOpacity
-                    style={styles.notesButton}
-                    onPress={() =>
-                        setSavedNotes(notes)
-                    }
-                >
-
-                    <Text style={styles.notesButtonText}>
-                        Save Notes
-                    </Text>
-
-                </TouchableOpacity>
-
-                {/* SAVED NOTES */}
-
-                {
-                    savedNotes ? (
-
-                        <View style={styles.savedNotesBox}>
-
-                            <Text style={styles.savedNotesTitle}>
-                                Saved Notes
-                            </Text>
-
-                            <Text style={styles.savedNotesText}>
-                                {savedNotes}
-                            </Text>
-
-                        </View>
-
-                    ) : null
-                }
-
-            </View>
-
-            {/* ACTION BUTTONS */}
-
-            <View style={styles.buttonRow}>
-
-                {/* SAVE CASE */}
-
-                <TouchableOpacity
-                    activeOpacity={0.85}
-                    style={styles.buttonWrapper}
-                    onPress={handleSaveCase}
-                >
-
-                    <LinearGradient
-                        colors={[
-                            "#3B82F6",
-                            "#2563EB",
-                            "#1D4ED8"
+                    <Text
+                        style={[
+                            styles.predictionLabel,
+                            {
+                                color:
+                                    "#FFFFFF"
+                            }
                         ]}
-                        style={styles.saveButton}
                     >
 
-                        <Text style={styles.buttonText}>
-                            Save Case
-                        </Text>
+                        {
+                            mode === "xray"
+                                ? "Prediction (X-ray)"
+                                : "Prediction (CBCT)"
+                        }
 
-                    </LinearGradient>
+                    </Text>
 
-                </TouchableOpacity>
-
-                {/* ANALYZE AGAIN */}
-
-                <TouchableOpacity
-                    activeOpacity={0.85}
-                    style={styles.buttonWrapper}
-                    onPress={() =>
-                        setAnalyzeModal(true)
-                    }
-                >
-
-                    <LinearGradient
-                        colors={[
-                            "#14B8A6",
-                            "#0D9488"
+                    <Text
+                        style={[
+                            styles.resultText,
+                            {
+                                color: "#FFFFFF"
+                            }
                         ]}
-                        style={styles.againButton}
                     >
+                        {prediction}
+                    </Text>
 
-                        <Text style={styles.buttonText}>
-                            Analyze Again
+                    <Text
+                        style={{
+                            color: "#FFFFFF",
+                            fontSize: 18,
+                            marginTop: 12,
+                            fontWeight: "600",
+                            textAlign: "center",
+                        }}
+                    >
+                        Confidence: {confidence}%
+                    </Text>
+
+                </LinearGradient>
+
+                {/* MEASUREMENTS */}
+
+                <View style={styles.measurementCard}>
+
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Mean Intensity
                         </Text>
-
-                    </LinearGradient>
-
-                </TouchableOpacity>
-
-            </View>
-
-            {/* SAVE MODAL */}
-
-            <Modal
-                transparent={true}
-                visible={saveModal}
-                animationType="fade"
-            >
-
-                <View style={styles.modalOverlay}>
-
-                    <View style={styles.modalContainer}>
-
-                        <View
-                            style={styles.successCircle}
-                        >
-
-                            <Ionicons
-                                name="checkmark"
-                                size={30}
-                                color="#FFFFFF"
-                            />
-
-                        </View>
-
-                        <Text style={styles.modalTitle}>
-                            Case Saved
+                        <Text style={styles.measurementValue}>
+                            {features.meanIntensity?.toFixed(2)}
                         </Text>
+                    </View>
 
-                        <Text style={styles.modalText}>
-                            Your case has been saved successfully
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Edge Density
                         </Text>
+                        <Text style={styles.measurementValue}>
+                            {features.edgeDensity?.toFixed(4)}
+                        </Text>
+                    </View>
 
-                        <TouchableOpacity
-                            style={styles.okButton}
-                            onPress={() => {
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Contrast
+                        </Text>
+                        <Text style={styles.measurementValue}>
+                            {features.contrast?.toFixed(2)}
+                        </Text>
+                    </View>
 
-                                setSaveModal(false);
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Homogeneity
+                        </Text>
+                        <Text style={styles.measurementValue}>
+                            {features.homogeneity?.toFixed(2)}
+                        </Text>
+                    </View>
 
-                                navigation.navigate("Home");
-
-                            }}
-                        >
-
-                            <Text style={styles.okText}>
-                                OK
-                            </Text>
-
-                        </TouchableOpacity>
-
+                    <View style={styles.measurementRow}>
+                        <Text style={styles.measurementLabel}>
+                            Energy
+                        </Text>
+                        <Text style={styles.measurementValue}>
+                            {features.energy?.toFixed(2)}
+                        </Text>
                     </View>
 
                 </View>
 
-            </Modal>
+                {/* RECOMMENDATION */}
 
-            {/* ANALYZE AGAIN MODAL */}
+                <LinearGradient
+                    colors={[
+                        "#DBEAFE",
+                        "#E0F2FE"
+                    ]}
+                    style={styles.recommendationCard}
+                >
 
-            <Modal
-                transparent={true}
-                visible={analyzeModal}
-                animationType="fade"
-            >
+                    <Text
+                        style={styles.recommendationTitle}
+                    >
+                        AI Recommendation
+                    </Text>
 
-                <View style={styles.modalOverlay}>
+                    <Text
+                        style={styles.recommendationText}
+                    >
 
-                    <View style={styles.modalContainer}>
+                        {recommendation}
 
-                        <View
-                            style={styles.warningCircle}
-                        >
+                    </Text>
 
-                            <Ionicons
-                                name="refresh"
-                                size={30}
-                                color="#FFFFFF"
-                            />
+                </LinearGradient>
 
-                        </View>
+                {/* NOTES */}
 
-                        <Text style={styles.modalTitle}>
-                            Analyze Again?
+                <View style={styles.notesCard}>
+
+                    <Text style={styles.notesTitle}>
+                        Notes
+                    </Text>
+
+                    <Text style={styles.notesSubtitle}>
+                        Add clinical observations
+                        (optional)
+                    </Text>
+
+                    <TextInput
+                        placeholder="Type notes here..."
+                        placeholderTextColor="#94A3B8"
+                        style={styles.notesInput}
+                        multiline
+                        value={notes}
+                        onChangeText={setNotes}
+                    />
+
+                    {/* SAVE NOTES */}
+
+                    <TouchableOpacity
+                        style={styles.notesButton}
+                        onPress={() =>
+                            setSavedNotes(notes)
+                        }
+                    >
+
+                        <Text style={styles.notesButtonText}>
+                            Save Notes
                         </Text>
 
-                        <Text style={styles.modalText}>
-                            Current analysis will be closed.
-                        </Text>
+                    </TouchableOpacity>
 
-                        <View style={styles.modalButtonRow}>
+                    {/* SAVED NOTES */}
 
-                            {/* CANCEL */}
+                    {
+                        savedNotes ? (
 
-                            <TouchableOpacity
-                                style={styles.cancelButton}
-                                onPress={() =>
-                                    setAnalyzeModal(false)
-                                }
-                            >
+                            <View style={styles.savedNotesBox}>
 
-                                <Text style={styles.cancelText}>
-                                    Cancel
+                                <Text style={styles.savedNotesTitle}>
+                                    Saved Notes
                                 </Text>
 
-                            </TouchableOpacity>
+                                <Text style={styles.savedNotesText}>
+                                    {savedNotes}
+                                </Text>
 
-                            {/* YES */}
+                            </View>
+
+                        ) : null
+                    }
+
+                </View>
+
+                {/* ACTION BUTTONS */}
+
+                <View style={styles.buttonRow}>
+
+                    {/* SAVE CASE */}
+
+                    <TouchableOpacity
+                        activeOpacity={0.85}
+                        style={styles.buttonWrapper}
+                        onPress={handleSaveCase}
+                    >
+
+                        <LinearGradient
+                            colors={[
+                                "#3B82F6",
+                                "#2563EB",
+                                "#1D4ED8"
+                            ]}
+                            style={styles.saveButton}
+                        >
+
+                            <Text style={styles.buttonText}>
+                                Save Case
+                            </Text>
+
+                        </LinearGradient>
+
+                    </TouchableOpacity>
+
+                    {/* ANALYZE AGAIN */}
+
+                    <TouchableOpacity
+                        activeOpacity={0.85}
+                        style={styles.buttonWrapper}
+                        onPress={() =>
+                            setAnalyzeModal(true)
+                        }
+                    >
+
+                        <LinearGradient
+                            colors={[
+                                "#14B8A6",
+                                "#0D9488"
+                            ]}
+                            style={styles.againButton}
+                        >
+
+                            <Text style={styles.buttonText}>
+                                Analyze Again
+                            </Text>
+
+                        </LinearGradient>
+
+                    </TouchableOpacity>
+
+                </View>
+
+                {/* SAVE MODAL */}
+
+                <Modal
+                    transparent={true}
+                    visible={saveModal}
+                    animationType="fade"
+                >
+
+                    <View style={styles.modalOverlay}>
+
+                        <View style={styles.modalContainer}>
+
+                            <View
+                                style={styles.successCircle}
+                            >
+
+                                <Ionicons
+                                    name="checkmark"
+                                    size={30}
+                                    color="#FFFFFF"
+                                />
+
+                            </View>
+
+                            <Text style={styles.modalTitle}>
+                                Case Saved
+                            </Text>
+
+                            <Text style={styles.modalText}>
+                                Your case has been saved successfully
+                            </Text>
 
                             <TouchableOpacity
-                                style={styles.yesButton}
+                                style={styles.okButton}
                                 onPress={() => {
 
-                                    setAnalyzeModal(false);
+                                    setSaveModal(false);
 
                                     navigation.navigate(
-                                        "SelectMode"
+                                        "Home",
+                                        {
+                                            user
+                                        }
                                     );
 
                                 }}
                             >
 
-                                <Text style={styles.yesText}>
-                                    Yes
+                                <Text style={styles.okText}>
+                                    OK
                                 </Text>
 
                             </TouchableOpacity>
@@ -568,11 +519,95 @@ export default function ResultScreen({
 
                     </View>
 
-                </View>
+                </Modal>
 
-            </Modal>
+                {/* ANALYZE AGAIN MODAL */}
 
-        </ScrollView>
+                <Modal
+                    transparent={true}
+                    visible={analyzeModal}
+                    animationType="fade"
+                >
+
+                    <View style={styles.modalOverlay}>
+
+                        <View style={styles.modalContainer}>
+
+                            <View
+                                style={styles.warningCircle}
+                            >
+
+                                <Ionicons
+                                    name="refresh"
+                                    size={30}
+                                    color="#FFFFFF"
+                                />
+
+                            </View>
+
+                            <Text style={styles.modalTitle}>
+                                Analyze Again?
+                            </Text>
+
+                            <Text style={styles.modalText}>
+                                Current analysis will be closed.
+                            </Text>
+
+                            <View style={styles.modalButtonRow}>
+
+                                {/* CANCEL */}
+
+                                <TouchableOpacity
+                                    style={styles.cancelButton}
+                                    onPress={() =>
+                                        setAnalyzeModal(false)
+                                    }
+                                >
+
+                                    <Text style={styles.cancelText}>
+                                        Cancel
+                                    </Text>
+
+                                </TouchableOpacity>
+
+                                {/* YES */}
+
+                                <TouchableOpacity
+                                    style={styles.yesButton}
+                                    onPress={() => {
+
+                                        setAnalyzeModal(false);
+
+                                        navigation.reset({
+                                            index: 0,
+                                            routes: [
+                                                {
+                                                    name: "Home",
+                                                    params: { user }
+                                                }
+                                            ],
+                                        });
+
+                                    }}
+                                >
+
+                                    <Text style={styles.yesText}>
+                                        Yes
+                                    </Text>
+
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+
+                    </View>
+
+                </Modal>
+
+            </ScrollView>
+
+        </KeyboardAvoidingView>
 
     );
 }
@@ -584,6 +619,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 70,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     headerSection: {
@@ -825,6 +865,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 36,
         paddingHorizontal: 24,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     successCircle: {

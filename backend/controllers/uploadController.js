@@ -10,6 +10,10 @@ const uploadScan = async (req, res) => {
             roiData,
         } = req.body;
 
+        console.log("MODE =", mode);
+        console.log("FILES =", req.files);
+        console.log("BODY =", req.body);
+
         const parsedROI =
             roiData
                 ? JSON.parse(roiData)
@@ -58,6 +62,9 @@ const uploadScan = async (req, res) => {
 
         // SEND TO PYTHON
 
+        console.log("REQ BODY =", req.body);
+        console.log("REQ FILES =", req.files);
+
         const aiResponse =
             await sendToPythonAI({
 
@@ -72,11 +79,22 @@ const uploadScan = async (req, res) => {
                     cbctImage?.filename,
             });
 
+        console.log("AI RESPONSE =", aiResponse);
+
         res.status(200).json({
 
             success: true,
 
-            aiResult: aiResponse,
+            aiResult: {
+
+                ...aiResponse,
+
+                xrayImage:
+                    xrayImage?.filename || null,
+
+                cbctImage:
+                    cbctImage?.filename || null,
+            }
 
         });
 

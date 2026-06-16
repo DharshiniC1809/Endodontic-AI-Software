@@ -5,13 +5,17 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function SelectModeScreen({ navigation }) {
+export default function SelectModeScreen({ navigation, route, }) {
+
+    const user =
+        route?.params?.user;
 
     const [selectedMode, setSelectedMode] = useState("");
 
@@ -130,6 +134,7 @@ export default function SelectModeScreen({ navigation }) {
                 activeOpacity={0.8}
                 onPress={() =>
                     navigation.navigate("UploadScan", {
+                        user,
                         mode: selectedMode
                     })
                 }
@@ -164,6 +169,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 24,
         paddingTop: 70,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     backRow: {

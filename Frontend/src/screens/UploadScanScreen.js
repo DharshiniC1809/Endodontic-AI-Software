@@ -8,6 +8,7 @@ import {
     TextInput,
     Image,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
@@ -20,6 +21,9 @@ export default function UploadScanScreen({
     navigation,
     route
 }) {
+
+    const user =
+        route?.params?.user;
 
     const { mode } = route.params;
 
@@ -73,12 +77,19 @@ export default function UploadScanScreen({
 
     const canContinue = () => {
 
+        const hasPatientName =
+            patientName.trim().length > 0;
+
         if (mode === "xray") {
-            return xrayImage;
+
+            return hasPatientName && xrayImage;
+
         }
 
         if (mode === "cbct") {
-            return cbctImage;
+
+            return hasPatientName && cbctImage;
+
         }
 
         return false;
@@ -259,6 +270,8 @@ export default function UploadScanScreen({
                     navigation.navigate(
                         "Preview",
                         {
+                            user,
+
                             mode,
 
                             patientName,
@@ -300,6 +313,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     headerRow: {

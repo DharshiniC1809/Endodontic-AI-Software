@@ -9,6 +9,7 @@ import {
     Text,
     StyleSheet,
     Animated,
+    Platform,
 } from "react-native";
 
 import { uploadScan } from "../services/api";
@@ -21,6 +22,11 @@ export default function LoadingScreen({
     navigation,
     route,
 }) {
+
+    const user =
+        route?.params?.user;
+
+    console.log("LOADING USER =", user);
 
     // GET MODE
 
@@ -162,26 +168,64 @@ export default function LoadingScreen({
 
                 if (xrayImage) {
 
-                    formData.append(
-                        "xrayImage",
-                        {
-                            uri: xrayImage,
-                            name: "xray.jpg",
-                            type: "image/jpeg"
-                        }
-                    );
+                    if (Platform.OS === "web") {
+
+                        const response =
+                            await fetch(xrayImage);
+
+                        const blob =
+                            await response.blob();
+
+                        formData.append(
+                            "xrayImage",
+                            blob,
+                            "xray.jpg"
+                        );
+
+                    } else {
+
+                        formData.append(
+                            "xrayImage",
+                            {
+                                uri: xrayImage,
+                                name: "xray.jpg",
+                                type: "image/jpeg"
+                            }
+                        );
+
+                    }
+
                 }
 
                 if (cbctImage) {
 
-                    formData.append(
-                        "cbctImage",
-                        {
-                            uri: cbctImage,
-                            name: "cbct.jpg",
-                            type: "image/jpeg"
-                        }
-                    );
+                    if (Platform.OS === "web") {
+
+                        const response =
+                            await fetch(cbctImage);
+
+                        const blob =
+                            await response.blob();
+
+                        formData.append(
+                            "cbctImage",
+                            blob,
+                            "cbct.jpg"
+                        );
+
+                    } else {
+
+                        formData.append(
+                            "cbctImage",
+                            {
+                                uri: cbctImage,
+                                name: "cbct.jpg",
+                                type: "image/jpeg"
+                            }
+                        );
+
+                    }
+
                 }
 
                 const result =
@@ -190,8 +234,8 @@ export default function LoadingScreen({
                     );
 
                 console.log(
-                    "AI RESULT:",
-                    result
+                    "FULL AI RESULT:",
+                    JSON.stringify(result)
                 );
 
                 setTimeout(() => {
@@ -199,8 +243,9 @@ export default function LoadingScreen({
                     navigation.replace(
                         "Result",
                         {
-                            mode,
+                            user,
 
+                            mode,
                             patientName,
                             patientAge,
 
@@ -438,6 +483,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 28,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     loaderWrapper: {

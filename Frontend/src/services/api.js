@@ -1,4 +1,4 @@
-const API_URL = "http://10.186.43.44:5000/api";
+const API_URL = "http://10.179.115.44:5000/api";
 
 export const uploadScan = async (formData) => {
 
@@ -137,11 +137,11 @@ export const saveAnalysis =
     };
 
 export const getHistory =
-    async () => {
+    async (userId) => {
 
         const response =
             await fetch(
-                `${API_URL}/analysis/history`
+                `${API_URL}/analysis/history/${userId}`
             );
 
         return await response.json();

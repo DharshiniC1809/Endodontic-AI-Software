@@ -1,3 +1,6 @@
+import AsyncStorage
+    from "@react-native-async-storage/async-storage";
+
 import React, {
     useState,
     useCallback,
@@ -18,6 +21,7 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import {
@@ -30,7 +34,11 @@ import {
 
 export default function HistoryScreen({
     navigation,
+    route,
 }) {
+
+    const [search, setSearch] =
+        useState("");
 
     const [selectedFilter, setSelectedFilter] =
         useState("All");
@@ -38,39 +46,80 @@ export default function HistoryScreen({
     const [historyData, setHistoryData] =
         useState([]);
 
+    const [user, setUser] =
+        useState(null);
 
     useFocusEffect(
 
         useCallback(() => {
 
-            loadHistory();
+            const loadUser =
+                async () => {
+
+                    const storedUser =
+                        await AsyncStorage.getItem(
+                            "user"
+                        );
+
+                    if (storedUser) {
+
+                        const parsedUser =
+                            JSON.parse(
+                                storedUser
+                            );
+
+                        setUser(
+                            parsedUser
+                        );
+
+                        loadHistory(
+                            parsedUser._id
+                        );
+                    }
+                };
+
+            loadUser();
 
         }, [])
 
     );
 
-    const loadHistory = async () => {
+    const loadHistory =
+        async (userId) => {
 
-        try {
+            console.log(
+                "USER ID SENT =",
+                userId
+            );
 
-            const result =
-                await getHistory();
 
-            if (result.success) {
+            try {
 
-                setHistoryData(
-                    result.analyses
+                const result =
+                    await getHistory(
+                        userId
+                    );
+
+                console.log(
+                    "HISTORY RESULT",
+                    result
                 );
+
+                if (result.success) {
+
+                    setHistoryData(
+                        result.analyses
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.log(error);
 
             }
 
-        } catch (error) {
-
-            console.log(error);
-
-        }
-
-    };
+        };
 
     const filters = [
         "All",
@@ -79,31 +128,34 @@ export default function HistoryScreen({
     ];
 
     const filteredData =
-        selectedFilter === "All"
-            ? historyData
-            : historyData.filter(
-                (item) => {
+        historyData.filter((item) => {
 
-                    if (
-                        selectedFilter === "X-ray"
-                    ) {
+            const matchesFilter =
+                selectedFilter === "All"
+                    ? true
+                    : selectedFilter === "X-ray"
+                        ? item.mode === "xray"
+                        : item.mode === "cbct";
 
-                        return item.mode === "xray";
+            const matchesSearch =
+                item.patientName
+                    .toLowerCase()
+                    .includes(
+                        search.toLowerCase()
+                    ) ||
 
-                    }
+                item._id
+                    .toLowerCase()
+                    .includes(
+                        search.toLowerCase()
+                    );
 
-                    if (
-                        selectedFilter === "CBCT"
-                    ) {
-
-                        return item.mode === "cbct";
-
-                    }
-
-                    return true;
-
-                }
+            return (
+                matchesFilter &&
+                matchesSearch
             );
+
+        });
 
     return (
 
@@ -213,6 +265,8 @@ export default function HistoryScreen({
                         placeholder="Search patient or case ID"
                         placeholderTextColor="#94A3B8"
                         style={styles.searchInput}
+                        value={search}
+                        onChangeText={setSearch}
                     />
 
                 </View>
@@ -413,6 +467,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     backRow: {

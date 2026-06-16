@@ -13,6 +13,7 @@ import {
     Animated,
     PanResponder,
     Dimensions,
+    Platform,
 } from "react-native";
 
 import { uploadScan } from "../services/api";
@@ -33,6 +34,9 @@ export default function PreviewScreen({
 }) {
 
     // SAFE PARAMS
+
+    const user =
+        route?.params?.user;
 
     const mode =
         route?.params?.mode || "xray";
@@ -56,6 +60,18 @@ export default function PreviewScreen({
 
     const [cbctHeight, setCbctHeight] =
         useState(300);
+
+    const [xrayOriginalSize, setXrayOriginalSize] =
+        useState({
+            width: 0,
+            height: 0
+        });
+
+    const [cbctOriginalSize, setCbctOriginalSize] =
+        useState({
+            width: 0,
+            height: 0
+        });
 
     // =========================
     // X-RAY ROI
@@ -335,23 +351,59 @@ export default function PreviewScreen({
 
     const handleAnalyze = () => {
 
-        const roi = mode === "xray"
-            ? {
-                x: xrayPan.x._value,
-                y: xrayPan.y._value,
-                width: xrayBoxWidth,
-                height: xrayBoxHeight
-            }
-            : {
-                x: cbctPan.x._value,
-                y: cbctPan.y._value,
-                width: cbctBoxWidth,
-                height: cbctBoxHeight
+        let roi;
+
+        if (mode === "xray") {
+
+            const scaleX =
+                xrayOriginalSize.width /
+                IMAGE_WIDTH;
+
+            const scaleY =
+                xrayOriginalSize.height /
+                xrayHeight;
+
+            roi = {
+
+                x: Math.round(xrayPan.x._value),
+                y: Math.round(xrayPan.y._value),
+                width: Math.max(120, Math.round(xrayBoxWidth)),
+                height: Math.max(120, Math.round(xrayBoxHeight))
+
             };
+
+        } else {
+
+            const scaleX =
+                cbctOriginalSize.width /
+                IMAGE_WIDTH;
+
+            const scaleY =
+                cbctOriginalSize.height /
+                cbctHeight;
+
+            roi = {
+
+                x: Math.round(cbctPan.x._value),
+                y: Math.round(cbctPan.y._value),
+                width: Math.max(120, Math.round(cbctBoxWidth)),
+                height: Math.max(120, Math.round(cbctBoxHeight))
+
+            };
+        }
+
+        console.log("ROI SENT =", {
+            x: xrayPan.x._value,
+            y: xrayPan.y._value,
+            width: xrayBoxWidth,
+            height: xrayBoxHeight
+        });
 
         navigation.navigate(
             "Loading",
             {
+                user,
+
                 mode,
 
                 patientName,
@@ -458,6 +510,11 @@ export default function PreviewScreen({
                                     } =
                                         event.nativeEvent.source;
 
+                                    setXrayOriginalSize({
+                                        width,
+                                        height
+                                    });
+
                                     const ratio =
                                         height / width;
 
@@ -548,6 +605,11 @@ export default function PreviewScreen({
                                         height
                                     } =
                                         event.nativeEvent.source;
+
+                                    setCbctOriginalSize({
+                                        width,
+                                        height
+                                    });
 
                                     const ratio =
                                         height / width;
@@ -650,6 +712,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     headerRow: {

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-
 import {
     loginUser
 } from "../services/api";
+
+import AsyncStorage from
+    "@react-native-async-storage/async-storage";
 
 import {
     View,
@@ -11,6 +13,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -43,11 +47,13 @@ export default function LoginScreen({ navigation }) {
 
                 setError("");
 
+                await AsyncStorage.setItem(
+                    "user",
+                    JSON.stringify(result.user)
+                );
+
                 navigation.replace(
-                    "Home",
-                    {
-                        user: result.user
-                    }
+                    "Home"
                 );
 
             } else {
@@ -69,110 +75,133 @@ export default function LoginScreen({ navigation }) {
     };
 
     return (
-        <ScrollView
-            style={styles.container}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={
+                Platform.OS === "ios"
+                    ? "padding"
+                    : undefined
+            }
         >
 
-            <View style={styles.logoContainer}>
-                <Text style={styles.logo}>🦷</Text>
-            </View>
+            <ScrollView
+                style={styles.container}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContainer}
+            >
+                <View
+                    style={
+                        Platform.OS === "web"
+                            ? {
+                                width: 500,
+                                maxWidth: "90%",
+                                alignSelf: "center",
+                            }
+                            : {}
+                    }
+                >
+                    <View style={styles.logoContainer}>
+                        <Text style={styles.logo}>🦷</Text>
+                    </View>
 
-            <Text style={styles.title}>Welcome Back</Text>
+                    <Text style={styles.title}>Welcome Back</Text>
 
-            <Text style={styles.subtitle}>
-                Login to continue
-            </Text>
+                    <Text style={styles.subtitle}>
+                        Login to continue
+                    </Text>
 
-            {/* EMAIL */}
+                    {/* EMAIL */}
 
-            <View style={styles.inputContainer}>
-                <Ionicons
-                    name="mail-outline"
-                    size={20}
-                    color="#64748B"
-                    style={styles.icon}
-                />
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name="mail-outline"
+                            size={20}
+                            color="#64748B"
+                            style={styles.icon}
+                        />
 
-                <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="#94A3B8"
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                />
-            </View>
+                        <TextInput
+                            placeholder="Email"
+                            placeholderTextColor="#94A3B8"
+                            style={styles.input}
+                            value={email}
+                            onChangeText={setEmail}
+                            textAlignVertical="center"
+                        />
+                    </View>
 
-            {/* PASSWORD */}
+                    {/* PASSWORD */}
 
-            <View style={styles.inputContainer}>
-                <Ionicons
-                    name="lock-closed-outline"
-                    size={20}
-                    color="#64748B"
-                    style={styles.icon}
-                />
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name="lock-closed-outline"
+                            size={20}
+                            color="#64748B"
+                            style={styles.icon}
+                        />
 
-                <TextInput
-                    placeholder="Password"
-                    placeholderTextColor="#94A3B8"
-                    secureTextEntry={!showPassword}
-                    style={styles.input}
-                    value={password}
-                    onChangeText={setPassword}
-                />
+                        <TextInput
+                            placeholder="Password"
+                            placeholderTextColor="#94A3B8"
+                            secureTextEntry={!showPassword}
+                            style={styles.input}
+                            value={password}
+                            onChangeText={setPassword}
+                            textAlignVertical="center"
+                        />
 
-                {/* ERROR MESSAGE */}
-
-                {
-                    error ? (
-
-                        <Text
-                            style={styles.errorText}
+                        <TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}
                         >
-                            {error}
+                            <Ionicons
+                                name={showPassword ? "eye-outline" : "eye-off-outline"}
+                                size={20}
+                                color="#64748B"
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* ERROR MESSAGE */}
+
+                    {
+                        error ? (
+
+                            <Text
+                                style={styles.errorText}
+                            >
+                                {error}
+                            </Text>
+
+                        ) : null
+                    }
+
+                    {/* LOGIN BUTTON */}
+
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={handleLogin}
+                    >
+                        <LinearGradient
+                            colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
+                            style={styles.button}
+                        >
+                            <Text style={styles.buttonText}>Login</Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+
+                    {/* SIGNUP */}
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Signup")}
+                    >
+                        <Text style={styles.signupText}>
+                            Don’t have an account? Sign Up
                         </Text>
-
-                    ) : null
-                }
-
-                <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                >
-                    <Ionicons
-                        name={showPassword ? "eye-outline" : "eye-off-outline"}
-                        size={20}
-                        color="#64748B"
-                    />
-                </TouchableOpacity>
-            </View>
-
-            {/* LOGIN BUTTON */}
-
-            <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={handleLogin}
-            >
-                <LinearGradient
-                    colors={["#3B82F6", "#2563EB", "#1D4ED8"]}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>Login</Text>
-                </LinearGradient>
-            </TouchableOpacity>
-
-            {/* SIGNUP */}
-
-            <TouchableOpacity
-                onPress={() => navigation.navigate("Signup")}
-            >
-                <Text style={styles.signupText}>
-                    Don’t have an account? Sign Up
-                </Text>
-            </TouchableOpacity>
-
-        </ScrollView>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -187,6 +216,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
         justifyContent: "center",
+        paddingBottom: 30,
     },
 
     logoContainer: {

@@ -11,6 +11,7 @@ import {
     StyleSheet,
     Modal,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -51,6 +52,15 @@ export default function ChangePasswordScreen({
 
     const handleChangePassword =
         async () => {
+
+            if (
+                !currentPassword.trim() ||
+                !newPassword.trim() ||
+                !confirmPassword.trim()
+            ) {
+                setError("Please fill all fields");
+                return;
+            }
 
             if (
                 newPassword !==
@@ -258,7 +268,7 @@ export default function ChangePasswordScreen({
                         style={{
                             color: "red",
                             marginBottom: 15,
-                            textAlign: "center"
+                            textAlign: "center",
                         }}
                     >
                         {error}
@@ -356,6 +366,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 28,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     backButton: {
@@ -389,6 +404,11 @@ const styles = StyleSheet.create({
         paddingVertical: 35,
         paddingHorizontal: 25,
         marginBottom: 35,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
 
         shadowColor: "#2563EB",
         shadowOffset: {
@@ -436,6 +456,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         height: 62,
 
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
+
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -462,6 +487,11 @@ const styles = StyleSheet.create({
         borderRadius: 18,
         alignItems: "center",
         marginTop: 18,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
 
         shadowColor: "#2563EB",
         shadowOffset: {
@@ -504,6 +534,11 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
 
         elevation: 10,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     successIcon: {

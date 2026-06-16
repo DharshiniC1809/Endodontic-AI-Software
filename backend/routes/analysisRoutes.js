@@ -19,7 +19,7 @@ router.post(
 );
 
 router.get(
-    "/history",
+    "/history/:userId",
     getHistory
 );
 

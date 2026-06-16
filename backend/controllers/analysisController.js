@@ -51,18 +51,29 @@ const getHistory =
 
         try {
 
+            const { userId } =
+                req.params;
+
+            console.log(
+                "REQ USER ID =",
+                userId
+            );
+
             const analyses =
-                await Analysis.find()
-                    .sort({
-                        createdAt: -1
-                    });
+                await Analysis.find({
+                    userId
+                }).sort({
+                    createdAt: -1
+                });
+
+            console.log(
+                "FOUND CASES =",
+                analyses.length
+            );
 
             res.status(200).json({
-
                 success: true,
-
                 analyses
-
             });
 
         } catch (error) {
@@ -70,12 +81,8 @@ const getHistory =
             console.log(error);
 
             res.status(500).json({
-
                 success: false,
-
-                message:
-                    "Server Error"
-
+                message: "Server Error"
             });
 
         }

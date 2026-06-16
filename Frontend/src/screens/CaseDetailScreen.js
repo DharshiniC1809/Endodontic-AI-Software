@@ -19,6 +19,7 @@ import {
     Modal,
     TextInput,
     Image,
+    Platform,
 } from "react-native";
 
 import {
@@ -271,7 +272,7 @@ export default function CaseDetailScreen({
                                 <Image
                                     source={{
                                         uri:
-                                            caseData.xrayImage
+                                            `http://10.179.115.44:5000/uploads/${caseData.xrayImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -297,7 +298,7 @@ export default function CaseDetailScreen({
                                 <Image
                                     source={{
                                         uri:
-                                            caseData.cbctImage
+                                            `http://10.179.115.44:5000/uploads/${caseData.cbctImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -608,6 +609,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     backRow: {
@@ -828,6 +834,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         borderRadius: 30,
         padding: 26,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     modalTitle: {
@@ -912,6 +923,11 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
 
         elevation: 10,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     successCircle: {
@@ -978,6 +994,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 28,
 
         alignItems: "center",
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     deleteCircle: {
@@ -1009,6 +1030,10 @@ const styles = StyleSheet.create({
 
     deleteButtonsRow: {
         flexDirection: "row",
+        ...(Platform.OS === "web" && {
+            width: 400,
+            alignSelf: "center",
+        }),
         marginTop: 30,
     },
 

@@ -1,4 +1,11 @@
-import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import React,
+{
+    useState,
+    useEffect
+}
+    from "react";
 
 import {
     View,
@@ -6,6 +13,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -17,8 +25,33 @@ export default function ProfileScreen({
     route
 }) {
 
-    const user =
-        route?.params?.user;
+    const [user, setUser] =
+        useState(null);
+
+    useEffect(() => {
+
+        const loadUser = async () => {
+
+            const storedUser =
+                await AsyncStorage.getItem(
+                    "user"
+                );
+
+            if (storedUser) {
+
+                setUser(
+                    JSON.parse(
+                        storedUser
+                    )
+                );
+
+            }
+
+        };
+
+        loadUser();
+
+    }, []);
 
     return (
 
@@ -249,7 +282,14 @@ export default function ProfileScreen({
 
                 <TouchableOpacity
                     style={styles.navItem}
-                    onPress={() => navigation.navigate("Home")}
+                    onPress={() =>
+                        navigation.navigate(
+                            "Home",
+                            {
+                                user
+                            }
+                        )
+                    }
                 >
 
                     <Ionicons
@@ -301,6 +341,11 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: "#0F172A",
         marginBottom: 24,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     profileCard: {
@@ -319,6 +364,11 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
 
         elevation: 8,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     circleTop: {
@@ -379,6 +429,11 @@ const styles = StyleSheet.create({
 
     menuContainer: {
         marginBottom: 10,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     menuCard: {
@@ -474,6 +529,11 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
 
         elevation: 6,
+
+        ...(Platform.OS === "web" && {
+            width: 500,
+            alignSelf: "center",
+        }),
     },
 
     logoutText: {
@@ -508,6 +568,18 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
 
         elevation: 10,
+
+        ...(Platform.OS === "web"
+            ? {
+                width: 540,
+                left: "50%",
+                marginLeft: -270,
+            }
+            : {
+                left: 0,
+                right: 0,
+            }),
+
     },
 
     navItem: {

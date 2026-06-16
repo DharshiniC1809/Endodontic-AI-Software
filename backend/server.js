@@ -57,6 +57,15 @@ app.use(
     authRoutes
 );
 
+const path = require("path");
+
+app.use(
+    "/uploads",
+    express.static(
+        path.join(__dirname, "uploads")
+    )
+);
+
 // START SERVER
 
 app.listen(PORT, () => {
@@ -65,4 +74,4 @@ app.listen(PORT, () => {
         `Server running on port ${PORT}`
     );
 
-});
+}); 

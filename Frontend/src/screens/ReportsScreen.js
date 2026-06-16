@@ -10,6 +10,7 @@ import {
     ScrollView,
     TouchableOpacity,
     TextInput,
+    Platform,
 } from "react-native";
 
 import {
@@ -26,7 +27,16 @@ import {
 
 export default function ReportsScreen({
     navigation,
+    route,
 }) {
+
+    const user =
+        route?.params?.user;
+
+    console.log(
+        "REPORT USER",
+        user
+    );
 
     const [selectedFilter, setSelectedFilter] =
         useState("All");
@@ -52,7 +62,9 @@ export default function ReportsScreen({
     const loadReports = async () => {
 
         const result =
-            await getHistory();
+            await getHistory(
+                user._id
+            );
 
         if (result.success) {
 
@@ -376,6 +388,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8FAFC",
         paddingHorizontal: 22,
         paddingTop: 65,
+
+        ...(Platform.OS === "web" && {
+            width: 544,
+            alignSelf: "center",
+        }),
     },
 
     backRow: {

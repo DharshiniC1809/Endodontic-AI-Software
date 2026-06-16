@@ -12,6 +12,8 @@ import {
     StyleSheet,
     ScrollView,
     Modal,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -73,202 +75,226 @@ export default function SignupScreen({ navigation }) {
     };
 
     return (
-        <ScrollView
-            style={styles.container}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={
+                Platform.OS === "ios"
+                    ? "padding"
+                    : "height"
+            }
         >
 
-            {/* LOGO */}
-
-            <View style={styles.logoContainer}>
-                <Text style={styles.logo}>🦷</Text>
-            </View>
-
-            {/* TITLE */}
-
-            <Text style={styles.title}>Create Account</Text>
-
-            <Text style={styles.subtitle}>
-                Sign up to continue
-            </Text>
-
-            {/* FULL NAME */}
-
-            <View style={styles.inputContainer}>
-                <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color="#64748B"
-                    style={styles.icon}
-                />
-
-                <TextInput
-                    placeholder="Full Name"
-                    placeholderTextColor="#94A3B8"
-                    style={styles.input}
-                    value={name}
-                    onChangeText={setName}
-                />
-            </View>
-
-            {/* EMAIL */}
-
-            <View style={styles.inputContainer}>
-                <Ionicons
-                    name="mail"
-                    size={20}
-                    color="#64748B"
-                    style={styles.icon}
-                />
-
-                <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="#94A3B8"
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                />
-            </View>
-
-            {/* PASSWORD */}
-
-            <View style={styles.inputContainer}>
-                <Ionicons
-                    name="lock-closed"
-                    size={20}
-                    color="#64748B"
-                    style={styles.icon}
-                />
-
-                <TextInput
-                    placeholder="Password"
-                    placeholderTextColor="#94A3B8"
-                    secureTextEntry={!showPassword}
-                    style={styles.input}
-                    value={password}
-                    onChangeText={setPassword}
-                />
-
-                <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
+            <ScrollView
+                style={styles.container}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContainer}
+            >
+                {/* LOGO */}
+                <View
+                    style={
+                        Platform.OS === "web"
+                            ? {
+                                width: 500,
+                                maxWidth: "90%",
+                                alignSelf: "center",
+                            }
+                            : {}
+                    }
                 >
-                    <Ionicons
-                        name={showPassword ? "eye" : "eye-off"}
-                        size={20}
-                        color="#64748B"
-                    />
-                </TouchableOpacity>
-            </View>
-
-            {
-                error ? (
-
-                    <Text
-                        style={styles.errorText}
-                    >
-                        {error}
-                    </Text>
-
-                ) : null
-            }
-
-            {/* BUTTON */}
-
-            <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={handleSignup}
-            >
-                <LinearGradient
-                    colors={["#14B8A6", "#0F766E"]}
-                    style={styles.button}
-                >
-                    <Text style={styles.buttonText}>
-                        Sign Up
-                    </Text>
-                </LinearGradient>
-            </TouchableOpacity>
-
-            {/* LOGIN */}
-
-            <TouchableOpacity
-                onPress={() => navigation.navigate("Login")}
-            >
-                <Text style={styles.loginText}>
-                    Already have an account? Login
-                </Text>
-            </TouchableOpacity>
-
-            {/* SUCCESS MODAL */}
-
-            <Modal
-                transparent={true}
-                visible={showSuccess}
-                animationType="fade"
-            >
-
-                <View style={styles.modalOverlay}>
-
-                    <View style={styles.modalContainer}>
-
-                        {/* ICON */}
-
-                        <LinearGradient
-                            colors={["#22C55E", "#16A34A"]}
-                            style={styles.successCircle}
-                        >
-
-                            <Ionicons
-                                name="checkmark"
-                                size={34}
-                                color="#FFFFFF"
-                            />
-
-                        </LinearGradient>
-
-                        {/* TITLE */}
-
-                        <Text style={styles.modalTitle}>
-                            Account Created
-                        </Text>
-
-                        <Text style={styles.modalSubtitle}>
-                            Your account has been created successfully
-                        </Text>
-
-                        {/* BUTTON */}
-
-                        <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={() => {
-
-                                setShowSuccess(false);
-
-                                navigation.navigate("Login");
-
-                            }}
-                        >
-
-                            <LinearGradient
-                                colors={["#14B8A6", "#0F766E"]}
-                                style={styles.modalButton}
-                            >
-
-                                <Text style={styles.modalButtonText}>
-                                    Continue
-                                </Text>
-
-                            </LinearGradient>
-
-                        </TouchableOpacity>
-
+                    <View style={styles.logoContainer}>
+                        <Text style={styles.logo}>🦷</Text>
                     </View>
 
+                    {/* TITLE */}
+
+                    <Text style={styles.title}>Create Account</Text>
+
+                    <Text style={styles.subtitle}>
+                        Sign up to continue
+                    </Text>
+
+                    {/* FULL NAME */}
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name="person-outline"
+                            size={20}
+                            color="#64748B"
+                            style={styles.icon}
+                        />
+
+                        <TextInput
+                            placeholder="Full Name"
+                            placeholderTextColor="#94A3B8"
+                            style={styles.input}
+                            value={name}
+                            onChangeText={setName}
+                            textAlignVertical="center"
+                        />
+                    </View>
+
+                    {/* EMAIL */}
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name="mail"
+                            size={20}
+                            color="#64748B"
+                            style={styles.icon}
+                        />
+
+                        <TextInput
+                            placeholder="Email"
+                            placeholderTextColor="#94A3B8"
+                            style={styles.input}
+                            value={email}
+                            onChangeText={setEmail}
+                            textAlignVertical="center"
+                        />
+                    </View>
+
+                    {/* PASSWORD */}
+
+                    <View style={styles.inputContainer}>
+                        <Ionicons
+                            name="lock-closed"
+                            size={20}
+                            color="#64748B"
+                            style={styles.icon}
+                        />
+
+                        <TextInput
+                            placeholder="Password"
+                            placeholderTextColor="#94A3B8"
+                            secureTextEntry={!showPassword}
+                            style={styles.input}
+                            value={password}
+                            onChangeText={setPassword}
+                            textAlignVertical="center"
+                        />
+
+                        <TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Ionicons
+                                name={showPassword ? "eye" : "eye-off"}
+                                size={20}
+                                color="#64748B"
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {
+                        error ? (
+
+                            <Text
+                                style={styles.errorText}
+                            >
+                                {error}
+                            </Text>
+
+                        ) : null
+                    }
+
+                    {/* BUTTON */}
+
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={handleSignup}
+                    >
+                        <LinearGradient
+                            colors={["#14B8A6", "#0F766E"]}
+                            style={styles.button}
+                        >
+                            <Text style={styles.buttonText}>
+                                Sign Up
+                            </Text>
+                        </LinearGradient>
+                    </TouchableOpacity>
+
+                    {/* LOGIN */}
+
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate("Login")}
+                    >
+                        <Text style={styles.loginText}>
+                            Already have an account? Login
+                        </Text>
+                    </TouchableOpacity>
+
+                    {/* SUCCESS MODAL */}
+
+                    <Modal
+                        transparent={true}
+                        visible={showSuccess}
+                        animationType="fade"
+                    >
+
+                        <View style={styles.modalOverlay}>
+
+                            <View style={styles.modalContainer}>
+
+                                {/* ICON */}
+
+                                <LinearGradient
+                                    colors={["#22C55E", "#16A34A"]}
+                                    style={styles.successCircle}
+                                >
+
+                                    <Ionicons
+                                        name="checkmark"
+                                        size={34}
+                                        color="#FFFFFF"
+                                    />
+
+                                </LinearGradient>
+
+                                {/* TITLE */}
+
+                                <Text style={styles.modalTitle}>
+                                    Account Created
+                                </Text>
+
+                                <Text style={styles.modalSubtitle}>
+                                    Your account has been created successfully
+                                </Text>
+
+                                {/* BUTTON */}
+
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+                                    onPress={() => {
+
+                                        setShowSuccess(false);
+
+                                        navigation.navigate("Login");
+
+                                    }}
+                                >
+
+                                    <LinearGradient
+                                        colors={["#14B8A6", "#0F766E"]}
+                                        style={styles.modalButton}
+                                    >
+
+                                        <Text style={styles.modalButtonText}>
+                                            Continue
+                                        </Text>
+
+                                    </LinearGradient>
+
+                                </TouchableOpacity>
+
+                            </View>
+
+                        </View>
+
+                    </Modal>
                 </View>
+            </ScrollView>
 
-            </Modal>
-
-        </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -283,6 +309,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
         justifyContent: "center",
+        paddingBottom: 30,
     },
 
     logoContainer: {
@@ -402,6 +429,11 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
 
         elevation: 10,
+
+        ...(Platform.OS === "web" && {
+            width: 470,
+            alignSelf: "center",
+        }),
     },
 
     successCircle: {
