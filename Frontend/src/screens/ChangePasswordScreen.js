@@ -10,13 +10,15 @@ import {
     TouchableOpacity,
     StyleSheet,
     Modal,
-    ScrollView,
     Platform,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 
 import { LinearGradient } from "expo-linear-gradient";
+
+import { KeyboardAwareScrollView }
+    from "react-native-keyboard-aware-scroll-view";
 
 export default function ChangePasswordScreen({
     navigation,
@@ -99,13 +101,16 @@ export default function ChangePasswordScreen({
 
     return (
 
-        <ScrollView
+        <KeyboardAwareScrollView
             style={styles.container}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
                 paddingBottom: 120,
                 flexGrow: 1,
             }}
+            enableOnAndroid={true}
+            extraScrollHeight={30}
+            keyboardShouldPersistTaps="handled"
         >
 
             {/* HEADER */}
@@ -347,7 +352,7 @@ export default function ChangePasswordScreen({
 
             </Modal>
 
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
     );
 }

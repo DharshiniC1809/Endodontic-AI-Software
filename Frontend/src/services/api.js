@@ -191,3 +191,76 @@ export const deleteCase =
         return await response.json();
 
     };
+
+export const sendOTP = async (
+    email
+) => {
+
+    const response = await fetch(
+        `${API_URL}/auth/send-otp`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                email
+            })
+        }
+    );
+
+    return await response.json();
+};
+
+export const verifyOTP = async (
+    email,
+    otp
+) => {
+
+    const response = await fetch(
+        `${API_URL}/auth/verify-otp`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                email,
+                otp
+            })
+        }
+    );
+
+    return await response.json();
+};
+
+export const resetPassword = async (
+    email,
+    password
+) => {
+
+    const response = await fetch(
+        `${API_URL}/auth/reset-password`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                email,
+                password
+            })
+        }
+    );
+
+    return await response.json();
+};

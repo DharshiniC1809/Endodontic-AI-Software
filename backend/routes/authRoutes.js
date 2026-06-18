@@ -4,9 +4,11 @@ const express =
 const {
     signup,
     login,
-    forgotPassword,
     updateProfile,
-    changePassword
+    changePassword,
+    sendOTP,
+    verifyOTP,
+    resetPassword
 } = require(
     "../controllers/authController"
 );
@@ -25,8 +27,18 @@ router.post(
 );
 
 router.post(
-    "/forgot-password",
-    forgotPassword
+    "/send-otp",
+    sendOTP
+);
+
+router.post(
+    "/verify-otp",
+    verifyOTP
+);
+
+router.post(
+    "/reset-password",
+    resetPassword
 );
 
 router.put(

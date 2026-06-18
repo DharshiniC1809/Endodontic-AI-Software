@@ -1,137 +1,107 @@
-# 🦷 Endodontic AI Prediction System (Frontend)
+# Endodontic AI Prediction System - Frontend
 
-A premium mobile application frontend developed for predicting endodontic treatment outcomes using X-ray and CBCT scan analysis.
+## Overview
 
-This application provides a smooth and modern workflow for dental professionals to upload scans, select regions of interest (ROI), analyze dental conditions, and manage patient case reports.
+The Endodontic AI Prediction System Frontend is developed using React Native and Expo. It provides a modern and responsive user interface for dentists to upload dental scans, perform AI-based analysis, manage patient cases, generate reports, and monitor treatment success predictions.
 
----
+## Technologies Used
 
-# ✨ Features
+* React Native
+* Expo
+* React Navigation
+* AsyncStorage
+* Expo Linear Gradient
+* Expo Vector Icons
+* React Native Gesture Handler
+* React Native Reanimated
 
-## 🏠 Home Dashboard
-- Premium glossy medical UI
-- Quick access to:
-  - Start Analysis
-  - History
-  - Reports
-  - Profile
+## Features
 
----
+### Authentication
 
-# 📤 Scan Upload
+* User Registration
+* User Login
+* Forgot Password with OTP Verification
+* Reset Password
+* Change Password
+* Profile Management
 
-Supports:
-- X-ray Upload
-- CBCT Upload
-- Combined Mode (X-ray + CBCT)
+### Scan Analysis
 
-Features:
-- Patient details input
-- Dynamic upload cards
-- Image preview support
+* X-Ray Upload
+* CBCT Upload
+* ROI Selection
+* Scan Preview
+* AI Analysis Request
 
----
+### Case Management
 
-# 🔍 ROI (Region of Interest) Selection
+* Case History
+* Case Details
+* Notes Management
+* Delete Case
 
-Interactive ROI selection system:
-- Draggable selection box
-- Resizable ROI
-- Boundary restriction
-- Independent ROI for X-ray and CBCT
-- Dynamic image scaling
+### Reports
 
----
+* Report Generation
+* Report Viewing
+* PDF Report Download
 
-# 🤖 AI Analysis Workflow
+## Project Structure
 
-Animated AI processing screen with:
-- Scan uploading status
-- Tooth region detection
-- AI prediction simulation
-- Clinical report generation
+src/
+├── navigation/
+├── screens/
+├── services/
+├── assets/
+└── components/
 
----
+## Installation
 
-# 📊 Result Screen
+1. Clone the repository
 
-Displays:
-- High / Moderate / Low prediction
-- Clinical measurements
-- AI recommendations
-- Notes section
-- Save case functionality
-- Analyze again workflow
+git clone <repository-url>
 
----
+2. Navigate to frontend directory
 
-# 📝 Notes System
+cd frontend
 
-- Add clinical notes
-- Edit notes
-- Save acknowledgement popup
+3. Install dependencies
 
----
+npm install
 
-# 📂 History Module
+4. Start Expo
 
-Includes:
-- Search functionality
-- Filters (X-ray / CBCT / Combined)
-- Case detail view
-- Prediction summary
-- Clinical measurements
+npx expo start
 
----
+## Running on Devices
 
-# 📄 Reports Module
+* Android Emulator
+* Physical Android Device
+* iOS Simulator
+* Web Browser
 
-Features:
-- Search reports
-- Filter reports
-- Report detail page
-- Download report popup
-- Premium glossy report cards
+## API Connection
 
----
+Update API URL in:
 
-# 🎨 UI Design
+src/services/api.js
 
-The application follows a:
-- Modern medical UI
-- Glossy premium design
-- Soft shadows
-- Gradient cards
-- Clean typography
-- Smooth workflow navigation
+Example:
 
----
+const API_URL = "http://YOUR_IP_ADDRESS:5000/api";
 
-# 🛠️ Technologies Used
+## Future Enhancements
 
-- React Native
-- Expo
-- JavaScript
-- React Navigation
-- Expo Linear Gradient
-- Expo Image Picker
-- React Native Animated API
+* AI Confidence Visualization
+* Dashboard Analytics
+* Cloud Storage Integration
+* Multi-Doctor Access
+* Real-Time Notifications
 
----
+## Developed For
 
-# 📱 Frontend Workflow
+Final Year B.E Computer Science and Engineering Project
 
-```text
-Home
-↓
-Select Mode
-↓
-Upload Scan
-↓
-Preview + ROI Selection
-↓
-AI Loading Screen
-↓
-Result Screen
-↓
-History / Reports
+Title:
+Endodontic AI Prediction System for Treatment Success Prediction Using Dental Imaging and Machine Learning
