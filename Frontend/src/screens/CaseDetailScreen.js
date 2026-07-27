@@ -272,7 +272,7 @@ export default function CaseDetailScreen({
                                 <Image
                                     source={{
                                         uri:
-                                            `http://10.179.115.44:5000/uploads/${caseData.xrayImage}`
+                                            `http://10.144.134.44:5000/uploads/${caseData.xrayImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -298,7 +298,7 @@ export default function CaseDetailScreen({
                                 <Image
                                     source={{
                                         uri:
-                                            `http://10.179.115.44:5000/uploads/${caseData.cbctImage}`
+                                            `http://10.144.134.44:5000/uploads/${caseData.cbctImage}`
                                     }}
                                     style={styles.scanImage}
                                 />

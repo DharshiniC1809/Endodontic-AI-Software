@@ -1,0 +1,29 @@
+{
+  "name": "selenium-tests",
+  "version": "1.0.0",
+  "description": "Selenium E2E automation tests and test cases report generator for Endodontic AI Software frontend",
+  "main": "tests/login-tests.js",
+  "scripts": {
+    "test": "mocha tests/login-tests.js --timeout 60000",
+    "test:login": "node tests/login-tests.js",
+    "generate-excel": "node generate-excel.js"
+  },
+  "keywords": [
+    "selenium",
+    "e2e",
+    "testing",
+    "endodontic-ai",
+    "login-tests"
+  ],
+  "author": "Antigravity AI",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "selenium-webdriver": "^4.18.1"
+  },
+  "devDependencies": {
+    "chromedriver": "^122.0.0",
+    "mocha": "^10.3.0",
+    "chai": "^4.3.10"
+  }
+}

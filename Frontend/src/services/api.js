@@ -1,4 +1,4 @@
-const API_URL = "http://10.179.115.44:5000/api";
+const API_URL = "http://10.144.134.44:5000/api";
 
 export const uploadScan = async (formData) => {
 

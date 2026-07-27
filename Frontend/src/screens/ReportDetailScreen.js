@@ -281,8 +281,8 @@ td{
 
     <img
         src="${report.mode === "xray"
-                ? `http://10.179.115.44:5000/uploads/${report.xrayImage}`
-                : `http://10.179.115.44:5000/uploads/${report.cbctImage}`
+                ? `http://10.144.134.44:5000/uploads/${report.xrayImage}`
+                : `http://10.144.134.44:5000/uploads/${report.cbctImage}`
             }"
         style="
     width:70%;
@@ -533,7 +533,7 @@ td{
                                 <Image
                                     source={{
                                         uri:
-                                            `http://10.179.115.44:5000/uploads/${report.xrayImage}`
+                                            `http://10.144.134.44:5000/uploads/${report.xrayImage}`
                                     }}
                                     style={styles.scanImage}
                                 />
@@ -559,7 +559,7 @@ td{
                                 <Image
                                     source={{
                                         uri:
-                                            `http://10.179.115.44:5000/uploads/${report.cbctImage}`
+                                            `http://10.144.134.44:5000/uploads/${report.cbctImage}`
                                     }}
                                     style={styles.scanImage}
                                 />

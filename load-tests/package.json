@@ -1,0 +1,25 @@
+{
+  "name": "endodontic-ai-load-tests",
+  "version": "1.0.0",
+  "description": "Baseline & Load Testing Suite for Endodontic AI Backend Services (100 Virtual Users, 1 Minute Duration)",
+  "main": "baseline-load-test.js",
+  "scripts": {
+    "test:load": "node baseline-load-test.js",
+    "test:load:quick": "node baseline-load-test.js --duration 10",
+    "test:autocannon": "node autocannon-runner.js",
+    "generate-excel": "node generate-excel-report.js"
+  },
+  "keywords": [
+    "load-testing",
+    "baseline-testing",
+    "performance",
+    "benchmarking",
+    "rps",
+    "response-time"
+  ],
+  "author": "Endodontic AI Performance Team",
+  "license": "ISC",
+  "dependencies": {
+    "autocannon": "^7.15.0"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "endodontic-ai-appium-tests",
+  "version": "1.0.0",
+  "description": "Appium E2E Functional Test Automation Suite & Test Case Reporter for Endodontic AI React Native Mobile App Frontend",
+  "main": "tests/01_auth.test.js",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js --timeout 90000",
+    "test:auth": "mocha tests/01_auth.test.js --timeout 60000",
+    "test:scan": "mocha tests/02_upload_scan.test.js --timeout 60000",
+    "test:results": "mocha tests/03_results_case.test.js --timeout 60000",
+    "test:history": "mocha tests/04_history_reports.test.js --timeout 60000",
+    "test:profile": "mocha tests/05_profile_settings.test.js --timeout 60000",
+    "test:e2e": "mocha tests/06_e2e_full_workflow.test.js --timeout 120000",
+    "generate-excel": "node generate-excel.js"
+  },
+  "keywords": [
+    "appium",
+    "webdriverio",
+    "react-native",
+    "e2e-testing",
+    "endodontic-ai",
+    "mobile-automation",
+    "test-cases-excel"
+  ],
+  "author": "Endodontic AI QA & Automation Team",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "webdriverio": "^8.32.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "chai": "^4.3.10",
+    "mocha": "^10.3.0"
+  }
+}
