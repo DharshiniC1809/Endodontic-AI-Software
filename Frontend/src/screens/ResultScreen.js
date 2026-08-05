@@ -29,8 +29,6 @@ export default function ResultScreen({
     const user =
         route?.params?.user;
 
-    console.log("RESULT USER =", user);
-
     // SAFE MODE
 
     const mode =
@@ -38,8 +36,6 @@ export default function ResultScreen({
 
     const aiResult =
         route?.params?.aiResult;
-
-    console.log("AI RESULT RECEIVED =", aiResult);
 
     const patientName =
         route?.params?.patientName;

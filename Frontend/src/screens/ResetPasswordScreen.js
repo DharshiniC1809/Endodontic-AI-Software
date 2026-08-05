@@ -50,6 +50,15 @@ export default function ResetPasswordScreen({
     const [loading, setLoading] =
         useState(false);
 
+    const validatePassword = (password) => {
+
+        const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/;
+
+        return regex.test(password);
+
+    };
+
     const handleResetPassword =
         async () => {
 
@@ -69,6 +78,16 @@ export default function ResetPasswordScreen({
                 );
 
                 return;
+            }
+
+            if (!validatePassword(password)) {
+
+                setError(
+                    "Password must contain at least 6 characters, one uppercase letter, one lowercase letter, one number and one special character."
+                );
+
+                return;
+
             }
 
             try {

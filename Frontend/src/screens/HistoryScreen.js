@@ -87,12 +87,6 @@ export default function HistoryScreen({
     const loadHistory =
         async (userId) => {
 
-            console.log(
-                "USER ID SENT =",
-                userId
-            );
-
-
             try {
 
                 const result =
@@ -100,10 +94,6 @@ export default function HistoryScreen({
                         userId
                     );
 
-                console.log(
-                    "HISTORY RESULT",
-                    result
-                );
 
                 if (result.success) {
 

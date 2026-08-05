@@ -26,8 +26,6 @@ export default function LoadingScreen({
     const user =
         route?.params?.user;
 
-    console.log("LOADING USER =", user);
-
     // GET MODE
 
     const mode =
@@ -232,11 +230,6 @@ export default function LoadingScreen({
                     await uploadScan(
                         formData
                     );
-
-                console.log(
-                    "FULL AI RESULT:",
-                    JSON.stringify(result)
-                );
 
                 setTimeout(() => {
 

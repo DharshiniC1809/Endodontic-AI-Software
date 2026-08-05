@@ -365,10 +365,13 @@ export default function PreviewScreen({
 
             roi = {
 
-                x: Math.round(xrayPan.x._value),
-                y: Math.round(xrayPan.y._value),
-                width: Math.max(120, Math.round(xrayBoxWidth)),
-                height: Math.max(120, Math.round(xrayBoxHeight))
+                x: Math.round(xrayPan.x._value * scaleX),
+
+                y: Math.round(xrayPan.y._value * scaleY),
+
+                width: Math.round(xrayBoxWidth * scaleX),
+
+                height: Math.round(xrayBoxHeight * scaleY)
 
             };
 
@@ -384,20 +387,22 @@ export default function PreviewScreen({
 
             roi = {
 
-                x: Math.round(cbctPan.x._value),
-                y: Math.round(cbctPan.y._value),
-                width: Math.max(120, Math.round(cbctBoxWidth)),
-                height: Math.max(120, Math.round(cbctBoxHeight))
+                x: Math.round(cbctPan.x._value * scaleX),
+
+                y: Math.round(cbctPan.y._value * scaleY),
+
+                width: Math.round(cbctBoxWidth * scaleX),
+
+                height: Math.round(cbctBoxHeight * scaleY)
 
             };
         }
 
-        console.log("ROI SENT =", {
-            x: xrayPan.x._value,
-            y: xrayPan.y._value,
-            width: xrayBoxWidth,
-            height: xrayBoxHeight
-        });
+        console.log("ORIGINAL SIZE =", xrayOriginalSize);
+
+        console.log("DISPLAY SIZE =", IMAGE_WIDTH, xrayHeight);
+
+        console.log("ROI SENT =", roi);
 
         navigation.navigate(
             "Loading",

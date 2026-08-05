@@ -37,6 +37,15 @@ export default function SignupScreen({ navigation }) {
 
     const [showSuccess, setShowSuccess] = useState(false);
 
+    const validatePassword = (password) => {
+
+        const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/;
+
+        return regex.test(password);
+
+    };
+
     const handleSignup = async () => {
 
         try {
@@ -47,6 +56,16 @@ export default function SignupScreen({ navigation }) {
                     email,
                     password
                 );
+
+            if (!validatePassword(password)) {
+
+                setError(
+                    "Password must contain at least 6 characters, one uppercase letter, one lowercase letter, one number and one special character."
+                );
+
+                return;
+
+            }
 
             if (result.success) {
 

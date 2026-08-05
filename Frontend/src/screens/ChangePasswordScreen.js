@@ -52,6 +52,15 @@ export default function ChangePasswordScreen({
 
     const [successModal, setSuccessModal] = useState(false);
 
+    const validatePassword = (password) => {
+
+        const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/;
+
+        return regex.test(password);
+
+    };
+
     const handleChangePassword =
         async () => {
 
@@ -74,6 +83,16 @@ export default function ChangePasswordScreen({
                 );
 
                 return;
+            }
+
+            if (!validatePassword(newPassword)) {
+
+                setError(
+                    "Password must contain at least 6 characters, one uppercase letter, one lowercase letter, one number and one special character."
+                );
+
+                return;
+
             }
 
             const result =
