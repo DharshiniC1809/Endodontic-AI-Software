@@ -72,12 +72,8 @@ def analyze():
 
         image = cv2.imread(imagePath)
 
-        print("IMAGE PATH =", imagePath)
-
         if image is None:
             print("IMAGE NOT FOUND")
-        else:
-            print("IMAGE SHAPE =", image.shape)
 
         if image is None:
 
@@ -125,19 +121,10 @@ def analyze():
 
         # CROP ROI
 
-        print("AFTER FIX X =", x)
-        print("AFTER FIX Y =", y)
-        print("AFTER FIX WIDTH =", width)
-        print("AFTER FIX HEIGHT =", height)
-
         croppedROI = image[
             y:y + height,
             x:x + width
         ]
-
-        print("ROI =", roi)
-
-        print("CROPPED SHAPE =", croppedROI.shape)
 
         if croppedROI.size == 0:
             return jsonify({
@@ -162,8 +149,8 @@ def analyze():
         # CLAHE ENHANCEMENT
 
         clahe = cv2.createCLAHE(
-            clipLimit=2.0,
-            tileGridSize=(8, 8)
+            clipLimit=3.0,
+            tileGridSize=(16, 16)
         )
 
         enhancedROI = clahe.apply(
@@ -172,10 +159,9 @@ def analyze():
 
         # GAUSSIAN BLUR
 
-        blurredROI = cv2.GaussianBlur(
+        blurredROI = cv2.medianBlur(
             enhancedROI,
-            (5, 5),
-            0
+            3
         )
 
         # EDGE DETECTION
@@ -185,6 +171,18 @@ def analyze():
             50,
             150
         )
+
+        kernel = np.array([
+            [0, -1, 0],
+            [-1, 5, -1],
+            [0, -1, 0]
+        ])
+
+        sharpenedROI = cv2.filter2D(
+            blurredROI,
+            -1,
+            kernel
+     )
 
         # FEATURE EXTRACTION
 
@@ -287,13 +285,20 @@ def analyze():
             2
         )
 
+        print("\n========== AI ANALYSIS ==========")
+
         print(featureData)
 
-        print("RF:", rfPrediction)
+        print("RF =", rfPrediction)
+        print("SVM =", svmPrediction)
 
-        print("SVM:", svmPrediction)
+        print("RF Probability =", rfModel.predict_proba(featureData))
+        print("SVM Probability =", svmModel.predict_proba(featureData))
 
-        print("Confidence:", confidence)
+        print("Final Prediction =", prediction)
+        print("Confidence =", confidence)
+
+        print("=================================\n")
 
         # SAVE PROCESSED ROI
 
@@ -313,7 +318,7 @@ def analyze():
 
         cv2.imwrite(
             roiPath,
-            edges
+            sharpenedROI
         )
 
         return jsonify({

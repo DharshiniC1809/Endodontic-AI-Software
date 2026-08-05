@@ -12,7 +12,7 @@ import joblib
 
 # LOAD DATASET
 
-data = pd.read_csv("dataset.csv")
+data = pd.read_csv("dataset.csv", sep="\t")
 print(data["label"].value_counts())
 
 # FEATURES
