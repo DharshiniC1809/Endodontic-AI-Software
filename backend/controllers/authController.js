@@ -19,6 +19,13 @@ const transporter =
 
     });
 
+const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=[\]{};':"\\|,.<>/?]).{6,}$/;
+
+const isValidPassword = (password) => {
+    return passwordRegex.test(password);
+};
+
 const signup = async (req, res) => {
 
     try {
@@ -28,6 +35,19 @@ const signup = async (req, res) => {
             email,
             password
         } = req.body;
+
+        if (!isValidPassword(password)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Password must be at least 6 characters and contain uppercase, lowercase, number and special character."
+
+            });
+
+        }
 
         const existingUser =
             await User.findOne({
@@ -204,6 +224,19 @@ const forgotPassword = async (req, res) => {
 
                 success: false,
                 message: "User not found"
+
+            });
+
+        }
+
+        if (!isValidPassword(password)) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "Password must be at least 6 characters and contain uppercase, lowercase, number and special character."
 
             });
 
